@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Bell,
-  Check,
   CheckCheck,
   AlertTriangle,
   DollarSign,
-  ShoppingCart,
   TrendingDown,
-  Clock,
   X,
+  Trash2,
+  Clock,
+  ShoppingCart,
+  UserPlus,
+  CreditCard,
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,89 +21,106 @@ interface Notification {
   id: string;
   title: string;
   message: string;
-  type: "warning" | "danger" | "info" | "success";
+  type: string;
   read: boolean;
-  time: string;
+  createdAt: string;
 }
-
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    title: "Pagamento pendente",
-    message: "3 pagamentos aguardando confirmação - R$ 2.450,00",
-    type: "warning",
-    read: false,
-    time: "5 min atrás",
-  },
-  {
-    id: "2",
-    title: "Campanha com queda",
-    message: "ROAS da campanha 'Black Friday' caiu 15%",
-    type: "danger",
-    read: false,
-    time: "20 min atrás",
-  },
-  {
-    id: "3",
-    title: "Nova venda",
-    message: "Plano Anual - R$ 1.997,00 via Pix",
-    type: "success",
-    read: true,
-    time: "1h atrás",
-  },
-  {
-    id: "4",
-    title: "Estoque baixo",
-    message: "E-book 'Marketing Digital' com apenas 5 unidades",
-    type: "warning",
-    read: false,
-    time: "2h atrás",
-  },
-  {
-    id: "5",
-    title: "Tarefa atrasada",
-    message: "Revisão do conteúdo 'Landing Page Q4' está atrasada",
-    type: "danger",
-    read: false,
-    time: "3h atrás",
-  },
-];
 
 const typeStyles: Record<string, { bg: string; icon: string }> = {
   warning: { bg: "bg-yellow-500/10", icon: "text-yellow-400" },
   danger: { bg: "bg-red-500/10", icon: "text-red-400" },
   info: { bg: "bg-blue-500/10", icon: "text-blue-400" },
   success: { bg: "bg-green-500/10", icon: "text-green-400" },
+  payment: { bg: "bg-yellow-500/10", icon: "text-yellow-400" },
+  sale: { bg: "bg-green-500/10", icon: "text-green-400" },
+  lead: { bg: "bg-blue-500/10", icon: "text-blue-400" },
+  campaign: { bg: "bg-orange-500/10", icon: "text-orange-400" },
+  subscription: { bg: "bg-purple-500/10", icon: "text-purple-400" },
+  task: { bg: "bg-cyan-500/10", icon: "text-cyan-400" },
 };
 
 const typeIcons: Record<string, React.ElementType> = {
   warning: AlertTriangle,
   danger: TrendingDown,
   info: Bell,
-  success: DollarSign,
+  success: CheckCircle2,
+  payment: DollarSign,
+  sale: ShoppingCart,
+  lead: UserPlus,
+  campaign: TrendingDown,
+  subscription: CreditCard,
+  task: Clock,
 };
 
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (seconds < 60) return "agora";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
+
 export function NotificationsPanel({ onClose }: { onClose: () => void }) {
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications");
+      if (res.ok) {
+        const json = await res.json();
+        setNotifications(json.data || []);
+      }
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
   };
 
-  const markAllRead = () => {
+  const dismissNotification = async (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    await fetch(`/api/notifications?id=${id}`, { method: "DELETE" });
+  };
+
+  const markAllRead = async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ markAllRead: true }),
+    });
   };
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] glass-card shadow-2xl shadow-black/40 rounded-2xl overflow-hidden animate-fadeIn z-50">
+    <div className="absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] glass-card shadow-2xl shadow-black/40 rounded-2xl overflow-hidden z-50 border border-white/[0.08]">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-zinc-200">Notificações</h3>
+          <Bell className="w-4 h-4 text-zinc-400" />
+          <h3 className="text-sm font-semibold text-zinc-200">Notificacoes</h3>
           {unreadCount > 0 && (
             <span className="px-2 py-0.5 text-[10px] font-bold bg-orange-500 text-white rounded-full">
               {unreadCount}
@@ -128,62 +148,84 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
 
       {/* Notifications list */}
       <div className="max-h-[400px] overflow-y-auto">
-        {notifications.length === 0 && (
+        {loading ? (
+          <div className="px-5 py-10 text-center">
+            <div className="w-6 h-6 border-2 border-zinc-700 border-t-orange-500 rounded-full animate-spin mx-auto mb-2" />
+            <p className="text-xs text-zinc-500">Carregando...</p>
+          </div>
+        ) : notifications.length === 0 ? (
           <div className="px-5 py-10 text-center">
             <Bell className="w-8 h-8 text-zinc-700 mx-auto mb-2" />
-            <p className="text-sm text-zinc-500">Nenhuma notificação</p>
+            <p className="text-sm text-zinc-500">Nenhuma notificacao</p>
           </div>
-        )}
-        {notifications.map((notif) => {
-          const Icon = typeIcons[notif.type] || Bell;
-          const styles = typeStyles[notif.type] || typeStyles.info;
-          return (
-            <button
-              key={notif.id}
-              onClick={() => markAsRead(notif.id)}
-              className={cn(
-                "flex items-start gap-3 w-full px-5 py-3.5 text-left transition-colors hover:bg-white/[0.03] border-b border-white/[0.04] last:border-0",
-                !notif.read && "bg-orange-500/[0.03]"
-              )}
-            >
+        ) : (
+          notifications.map((notif) => {
+            const Icon = typeIcons[notif.type] || Bell;
+            const styles = typeStyles[notif.type] || typeStyles.info;
+            return (
               <div
+                key={notif.id}
                 className={cn(
-                  "flex items-center justify-center w-8 h-8 rounded-lg shrink-0 mt-0.5",
-                  styles.bg
+                  "flex items-start gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0 group transition-all duration-200",
+                  !notif.read && "bg-orange-500/[0.03]"
                 )}
               >
-                <Icon className={cn("w-4 h-4", styles.icon)} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p
-                    className={cn(
-                      "text-sm font-medium",
-                      notif.read ? "text-zinc-400" : "text-zinc-200"
-                    )}
-                  >
-                    {notif.title}
-                  </p>
-                  {!notif.read && (
-                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full shrink-0" />
+                <div
+                  className={cn(
+                    "flex items-center justify-center w-8 h-8 rounded-lg shrink-0 mt-0.5",
+                    styles.bg
                   )}
+                >
+                  <Icon className={cn("w-4 h-4", styles.icon)} />
                 </div>
-                <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2">
-                  {notif.message}
-                </p>
-                <p className="text-[11px] text-zinc-600 mt-1">{notif.time}</p>
+                <button
+                  onClick={() => markAsRead(notif.id)}
+                  className="flex-1 min-w-0 text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <p
+                      className={cn(
+                        "text-sm font-medium",
+                        notif.read ? "text-zinc-400" : "text-zinc-200"
+                      )}
+                    >
+                      {notif.title}
+                    </p>
+                    {!notif.read && (
+                      <div className="w-1.5 h-1.5 bg-orange-500 rounded-full shrink-0" />
+                    )}
+                  </div>
+                  <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2">
+                    {notif.message}
+                  </p>
+                  <p className="text-[11px] text-zinc-600 mt-1">
+                    {timeAgo(notif.createdAt)}
+                  </p>
+                </button>
+                <button
+                  onClick={() => dismissNotification(notif.id)}
+                  className="shrink-0 mt-1 w-6 h-6 flex items-center justify-center rounded-md text-zinc-600 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                  title="Dispensar"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
-            </button>
-          );
-        })}
+            );
+          })
+        )}
       </div>
 
       {/* Footer */}
-      <div className="px-5 py-3 border-t border-white/[0.06]">
-        <button className="w-full py-2 text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors">
-          Ver todas as notificações
-        </button>
-      </div>
+      {notifications.length > 0 && (
+        <div className="px-5 py-3 border-t border-white/[0.06]">
+          <button
+            onClick={onClose}
+            className="w-full py-2 text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors"
+          >
+            Ver todas as notificacoes
+          </button>
+        </div>
+      )}
     </div>
   );
 }
