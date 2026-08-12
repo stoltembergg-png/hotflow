@@ -126,23 +126,26 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col h-full",
-        "glass border-r border-white/[0.08] overflow-hidden",
-        "transition-[width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+        "hidden md:flex flex-col h-full bg-surface border-r border-white/[0.08] overflow-hidden",
+        "transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
       {/* Logo + Toggle */}
       <div
         className={cn(
-          "flex flex-col shrink-0 border-b border-white/[0.06] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-          collapsed ? "items-center py-4 gap-3" : "flex-row items-center justify-between px-4 h-16"
+          "flex shrink-0 border-b border-white/[0.06]",
+          "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          collapsed
+            ? "flex-col items-center py-4 gap-3"
+            : "flex-row items-center justify-between px-4 h-16"
         )}
       >
         <Link
           href="/dashboard"
           className={cn(
-            "flex items-center shrink-0 transition-all duration-300",
+            "flex items-center shrink-0",
+            "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
             collapsed ? "justify-center" : "gap-2.5"
           )}
         >
@@ -151,29 +154,25 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </div>
           <span
             className={cn(
-              "text-lg font-bold tracking-tight gradient-text whitespace-nowrap overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-              collapsed ? "w-0 opacity-0" : "w-auto opacity-100 ml-0"
+              "text-lg font-bold tracking-tight gradient-text whitespace-nowrap overflow-hidden",
+              "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
             )}
           >
             HOTFLOW
           </span>
         </Link>
 
-        {/* Toggle button — always visible */}
         <button
           onClick={onToggle}
           className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] transition-all duration-200 shrink-0",
-            collapsed ? "rotate-0" : ""
+            "flex items-center justify-center w-8 h-8 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] shrink-0",
+            "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "hover:scale-110 active:scale-95"
           )}
           title={collapsed ? "Expandir menu" : "Recolher menu"}
         >
-          <div
-            className={cn(
-              "transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
-              collapsed ? "rotate-0" : "rotate-0"
-            )}
-          >
+          <div className="transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
             {collapsed ? (
               <ChevronRight className="w-4 h-4" />
             ) : (
@@ -187,10 +186,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 space-y-1">
         {navSections.map((section, sIdx) => (
           <div key={sIdx} className="mb-2">
-            {/* Section header — only visible when expanded */}
+            {/* Section header */}
             <div
               className={cn(
-                "overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                "overflow-hidden",
+                "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                 collapsed ? "h-0 opacity-0" : "h-auto opacity-100"
               )}
             >
@@ -218,7 +218,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             {/* Nav items */}
             {(!section.title || expandedSections.has(section.title) || collapsed) && (
               <div className="space-y-0.5">
-                {section.items.map((item) => {
+                {section.items.map((item, iIdx) => {
                   const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
                   const Icon = item.icon;
                   return (
@@ -226,34 +226,45 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "relative flex items-center rounded-xl text-sm font-medium transition-all duration-200 group",
+                        "relative flex items-center rounded-xl text-sm font-medium group",
+                        "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
                         collapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2",
                         isActive
                           ? "bg-orange-500/10 text-orange-400"
                           : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
                       )}
                       title={collapsed ? item.label : undefined}
+                      style={{
+                        transitionDelay: collapsed ? `${iIdx * 20}ms` : `${iIdx * 10}ms`,
+                      }}
                     >
-                      {/* Active indicator bar */}
+                      {/* Active indicator */}
                       {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-orange-500 rounded-r-full transition-all duration-300" />
+                        <div
+                          className={cn(
+                            "absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-orange-500 rounded-r-full",
+                            "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                            collapsed ? "h-4" : "h-5"
+                          )}
+                        />
                       )}
                       <Icon
                         className={cn(
-                          "w-5 h-5 shrink-0 transition-colors duration-200",
+                          "w-5 h-5 shrink-0",
+                          "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
                           isActive ? "text-orange-400" : "text-zinc-500 group-hover:text-zinc-300"
                         )}
                       />
-                      {/* Label — hidden when collapsed */}
                       <span
                         className={cn(
-                          "truncate overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                          "truncate overflow-hidden",
+                          "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                           collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
                         )}
                       >
                         {item.label}
                       </span>
-                      {/* Tooltip on hover when collapsed */}
+                      {/* Tooltip when collapsed */}
                       {collapsed && (
                         <div className="absolute left-full ml-2 px-2.5 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 text-xs font-medium text-zinc-200 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 shadow-xl">
                           {item.label}
@@ -268,10 +279,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         ))}
       </nav>
 
-      {/* Upgrade CTA — hidden when collapsed */}
+      {/* Upgrade CTA */}
       <div
         className={cn(
-          "shrink-0 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          "shrink-0 overflow-hidden",
+          "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           collapsed ? "h-0 opacity-0 p-0 mx-0 mb-0" : "p-3 mx-2 mb-3 h-auto opacity-100"
         )}
       >

@@ -118,6 +118,13 @@ body {
   border: 1px solid var(--border);
 }
 
+.glass-card {
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;

@@ -51,7 +51,7 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-6 glass border-b border-white/[0.06]">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-6 bg-surface border-b border-white/[0.06] backdrop-blur-xl">
       {/* Left: Menu + Title */}
       <div className="flex items-center gap-3">
         <button
@@ -65,7 +65,7 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
       {/* Center: Search trigger */}
       <button
         onClick={onOpenSearch}
-        className="hidden sm:flex items-center gap-3 px-4 py-2 w-80 max-w-[50vw] rounded-xl border border-white/[0.08] bg-white/[0.03] text-zinc-500 hover:border-white/[0.15] hover:text-zinc-400 transition-all text-sm"
+        className="hidden sm:flex items-center gap-3 px-4 py-2 w-80 max-w-[50vw] rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-500 hover:border-white/[0.15] hover:text-zinc-400 transition-all text-sm"
       >
         <Search className="w-4 h-4" />
         <span className="flex-1 text-left">Buscar...</span>
@@ -84,7 +84,7 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-zinc-900" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-zinc-900 animate-pulse" />
             )}
           </button>
           <NotificationsPanel
@@ -110,7 +110,7 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 top-full mt-2 w-56 rounded-xl glass-card shadow-2xl shadow-black/40 py-2 animate-fadeIn">
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-surface border border-white/[0.1] shadow-2xl shadow-black/50 py-2 animate-fadeIn">
               <div className="px-4 py-2 border-b border-white/[0.06]">
                 <p className="text-sm font-medium text-zinc-200">{user?.name || "Usuario"}</p>
                 <p className="text-xs text-zinc-500">{user?.email || "usuario@email.com"}</p>
