@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-utils";
 
 export async function GET(request: NextRequest) {
+  const auth = requireAuth(request);
+  if (auth instanceof Response) return auth;
+  const orgId = auth.orgId;
+
   const { searchParams } = new URL(request.url);
   const period = searchParams.get("period") || "30d";
 
@@ -15,14 +20,14 @@ export async function GET(request: NextRequest) {
   }
 
   const [orders, customers, expenses, leads, campaigns, products, trafficSources, subscriptions] = await Promise.all([
-    prisma.order.findMany({ where: { createdAt: { gte: startDate } }, include: { product: true } }),
-    prisma.customer.findMany({ where: { createdAt: { gte: startDate } } }),
-    prisma.expense.findMany({ where: { date: { gte: startDate } } }),
-    prisma.lead.findMany({ where: { createdAt: { gte: startDate } } }),
-    prisma.campaign.findMany({ include: { metrics: true } }),
-    prisma.product.findMany(),
-    prisma.trafficSource.findMany(),
-    prisma.subscription.findMany(),
+    prisma.order.findMany({ where: { organizationId: orgId, createdAt: { gte: startDate } }, include: { product: true } }),
+    prisma.customer.findMany({ where: { organizationId: orgId, createdAt: { gte: startDate } } }),
+    prisma.expense.findMany({ where: { organizationId: orgId, date: { gte: startDate } } }),
+    prisma.lead.findMany({ where: { organizationId: orgId, createdAt: { gte: startDate } } }),
+    prisma.campaign.findMany({ where: { organizationId: orgId }, include: { metrics: true } }),
+    prisma.product.findMany({ where: { organizationId: orgId } }),
+    prisma.trafficSource.findMany({ where: { organizationId: orgId } }),
+    prisma.subscription.findMany({ where: { organizationId: orgId } }),
   ]);
 
   const paidOrders = orders.filter((o: any) => o.status === "paid");
@@ -36,12 +41,11 @@ export async function GET(request: NextRequest) {
   const mrr = activeSubs.reduce((s: number, sub: any) => s + (sub.amount || 0), 0);
   const activeCustomers = customers.filter((c: any) => c.status === "active" || c.status === "vip").length;
 
-  // Traffic metrics
   const totalTrafficInvest = trafficSources.reduce((s: number, t: any) => s + (t.investment || 0), 0);
   const totalTrafficRevenue = trafficSources.reduce((s: number, t: any) => s + (t.revenue || 0), 0);
   const roas = totalTrafficInvest > 0 ? totalTrafficRevenue / totalTrafficInvest : 0;
 
-  // Build time-series for faturamento chart (last N days, grouped by day)
+  // Time series
   const days = period === "7d" ? 7 : period === "90d" ? 90 : 30;
   const faturamentoChart: { name: string; value: number }[] = [];
   const vendasChart: { name: string; vendas: number; meta: number }[] = [];
@@ -59,55 +63,42 @@ export async function GET(request: NextRequest) {
     const dayCost = dayExpenses.reduce((s: number, e: any) => s + (e.amount || 0), 0);
 
     faturamentoChart.push({ name: label, value: dayRevenue });
-    vendasChart.push({ name: label, vendas: dayOrders.length, meta: Math.ceil(days > 30 ? (paidOrders.length / days) * 1.2 : (paidOrders.length / days) * 1.2) });
+    const dailyAvg = days > 0 ? Math.ceil((paidOrders.length / days) * 1.2) : 0;
+    vendasChart.push({ name: label, vendas: dayOrders.length, meta: dailyAvg });
     lucroChart.push({ name: label, receita: dayRevenue, custo: dayCost });
   }
 
-  // Origem das vendas (by source field on orders)
+  // Origem das vendas
   const sourceMap: Record<string, number> = {};
   paidOrders.forEach((o: any) => {
     const src = o.source || "Outros";
     sourceMap[src] = (sourceMap[src] || 0) + 1;
   });
   const sourceColors: Record<string, string> = {
-    "Instagram": "#f97316",
-    "Facebook": "#3b82f6",
-    "Google": "#a855f7",
-    "Indicação": "#22c55e",
-    "Orgânico": "#f97316",
-    "YouTube": "#ec4899",
-    "TikTok": "#06b6d4",
+    "Instagram": "#f97316", "Facebook": "#3b82f6", "Google": "#a855f7",
+    "Indicação": "#22c55e", "Orgânico": "#f97316", "YouTube": "#ec4899", "TikTok": "#06b6d4",
   };
   const totalSources = Object.values(sourceMap).reduce((a: number, b: number) => a + b, 0) || 1;
   const origemVendas = Object.entries(sourceMap).map(([name, count]) => ({
-    name,
-    value: Math.round((count / totalSources) * 100),
-    color: sourceColors[name] || "#71717a",
+    name, value: Math.round((count / totalSources) * 100), color: sourceColors[name] || "#71717a",
   })).sort((a, b) => b.value - a.value).slice(0, 6);
 
-  // Produtos top (by paid order count)
-  const productSalesMap: Record<string, { name: string; vendas: number; revenue: number }> = {};
+  // Produtos top
+  const productSalesMap: Record<string, { name: string; vendas: number }> = {};
   paidOrders.forEach((o: any) => {
     const pid = o.productId || "unknown";
     const pname = o.product?.name || "Sem produto";
-    if (!productSalesMap[pid]) productSalesMap[pid] = { name: pname, vendas: 0, revenue: 0 };
+    if (!productSalesMap[pid]) productSalesMap[pid] = { name: pname, vendas: 0 };
     productSalesMap[pid].vendas++;
-    productSalesMap[pid].revenue += o.netAmount || o.totalAmount || 0;
   });
-  const produtosTop = Object.values(productSalesMap)
-    .sort((a, b) => b.vendas - a.vendas)
-    .slice(0, 6)
-    .map(p => ({ name: p.name, vendas: p.vendas }));
+  const produtosTop = Object.values(productSalesMap).sort((a, b) => b.vendas - a.vendas).slice(0, 6).map(p => ({ name: p.name, vendas: p.vendas }));
 
   // Campanhas ROAS
-  const campanhasRoas = campaigns
-    .map((c: any) => {
-      const invest = c.metrics?.reduce((s: number, m: any) => s + (m.spend || 0), 0) || 0;
-      const revenue = c.metrics?.reduce((s: number, m: any) => s + (m.revenue || 0), 0) || 0;
-      return { name: c.name, roas: invest > 0 ? parseFloat((revenue / invest).toFixed(1)) : 0 };
-    })
-    .sort((a: any, b: any) => b.roas - a.roas)
-    .slice(0, 6);
+  const campanhasRoas = campaigns.map((c: any) => {
+    const invest = c.metrics?.reduce((s: number, m: any) => s + (m.spend || 0), 0) || 0;
+    const revenue = c.metrics?.reduce((s: number, m: any) => s + (m.revenue || 0), 0) || 0;
+    return { name: c.name, roas: invest > 0 ? parseFloat((revenue / invest).toFixed(1)) : 0 };
+  }).sort((a: any, b: any) => b.roas - a.roas).slice(0, 6);
 
   // Funnel
   const totalLeads = leads.length;
@@ -131,8 +122,8 @@ export async function GET(request: NextRequest) {
   }).length;
   const expiringSubs = activeSubs.filter((s: any) => {
     if (!s.nextBilling) return false;
-    const days = (new Date(s.nextBilling).getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-    return days >= 0 && days <= 7;
+    const daysUntil = (new Date(s.nextBilling).getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    return daysUntil >= 0 && daysUntil <= 7;
   }).length;
   const coldLeads = leads.filter((l: any) => ["new", "contacted"].includes(l.stage)).length;
 
@@ -156,17 +147,7 @@ export async function GET(request: NextRequest) {
     ...(expiringSubs > 0 ? [{ id: "4", icon: "CreditCard", title: "Assinaturas para Expirar", description: `${expiringSubs} assinatura(s) vencendo nos próximos 7 dias`, count: expiringSubs, severity: "warning", action: "Campanha de retenção" }] : []),
   ];
 
-  return NextResponse.json({
-    metrics,
-    faturamentoChart,
-    vendasChart,
-    lucroChart,
-    origemVendas,
-    produtosTop,
-    campanhasRoas,
-    funnel,
-    attention,
-  });
+  return NextResponse.json({ metrics, faturamentoChart, vendasChart, lucroChart, origemVendas, produtosTop, campanhasRoas, funnel, attention });
 }
 
 function formatBRL(value: number): string {

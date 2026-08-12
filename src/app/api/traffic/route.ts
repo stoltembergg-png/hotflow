@@ -1,12 +1,21 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-utils";
 
-export async function GET() {
-  const traffic = await prisma.trafficSource.findMany({ orderBy: { createdAt: 'desc' } });
-  return Response.json({ data: traffic, total: traffic.length });
+export async function GET(request: NextRequest) {
+  const auth = requireAuth(request);
+  if (auth instanceof Response) return auth;
+  const orgId = auth.orgId;
+
+  const traffic = await prisma.trafficSource.findMany({ where: { organizationId: orgId }, orderBy: { createdAt: 'desc' } });
+  return NextResponse.json({ data: traffic, total: traffic.length });
 }
 
 export async function POST(request: NextRequest) {
+  const auth = requireAuth(request);
+  if (auth instanceof Response) return auth;
+  const orgId = auth.orgId;
+
   const body = await request.json();
   const impressions = body.impressions || 0;
   const clicks = body.clicks || 0;
@@ -20,7 +29,8 @@ export async function POST(request: NextRequest) {
   const roas = (body.investment || 0) > 0 ? revenue / (body.investment || 0) : 0;
   const roi = (body.investment || 0) > 0 ? ((revenue - (body.investment || 0)) / (body.investment || 0)) * 100 : 0;
   const item = await prisma.trafficSource.create({
-    data: { campaign: body.campaign || null, platform: body.platform || null, adSet: body.adSet || null, creative: body.creative || null, investment: body.investment || 0, impressions, reach: body.reach || 0, clicks, ctr, cpc, leads, conversions, revenue, roas, cpa, cpl, roi, organizationId: body.organizationId || 'default' },
+    data: { campaign: body.campaign || null, platform: body.platform || null, adSet: body.adSet || null, creative: body.creative || null, investment: body.investment || 0, impressions, reach: body.reach || 0, clicks, ctr, cpc, leads, conversions, revenue, roas, cpa, cpl, roi, organizationId: orgId },
   });
-  return Response.json(item, { status: 201 });
+  return NextResponse.json(item, { status: 201 });
 }
+

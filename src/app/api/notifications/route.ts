@@ -1,18 +1,28 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-utils";
 
-export async function GET() {
-  const notifications = await prisma.notification.findMany({ orderBy: { createdAt: 'desc' }, take: 50 });
+export async function GET(request: NextRequest) {
+  const auth = requireAuth(request);
+  if (auth instanceof Response) return auth;
+  const orgId = auth.orgId;
+
+  const notifications = await prisma.notification.findMany({ where: { organizationId: orgId }, orderBy: { createdAt: 'desc' }, take: 50 });
   const unread = notifications.filter((n: any) => !n.read).length;
-  return Response.json({ data: notifications, unread });
+  return NextResponse.json({ data: notifications, unread });
 }
 
 export async function PATCH(request: NextRequest) {
+  const auth = requireAuth(request);
+  if (auth instanceof Response) return auth;
+  const orgId = auth.orgId;
+
   const body = await request.json();
   if (body.id) {
-    await prisma.notification.update({ where: { id: body.id }, data: { read: true } });
+    await prisma.notification.updateMany({ where: { id: body.id, organizationId: orgId }, data: { read: true } });
   } else if (body.markAllRead) {
-    await prisma.notification.updateMany({ data: { read: true } });
+    await prisma.notification.updateMany({ where: { organizationId: orgId }, data: { read: true } });
   }
-  return Response.json({ success: true });
+  return NextResponse.json({ success: true });
 }
+
