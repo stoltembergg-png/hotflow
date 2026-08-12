@@ -1,13 +1,93 @@
 @import "tailwindcss";
 
-:root {
+/* ========================================
+   Theme variables — applied via data-theme on <html>
+   ======================================== */
+
+:root,
+[data-theme="dark"] {
   --background: #030712;
   --foreground: #f9fafb;
+  --surface: #18181b;
+  --surface-hover: #27272a;
+  --border: rgba(255, 255, 255, 0.1);
+  --text-primary: #f9fafb;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #f97316;
+  --accent-light: #fb923c;
+}
+
+[data-theme="midnight"] {
+  --background: #0a0e1a;
+  --foreground: #e2e8f0;
+  --surface: #111827;
+  --surface-hover: #1e293b;
+  --border: rgba(99, 102, 241, 0.15);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+}
+
+[data-theme="ocean"] {
+  --background: #0c1222;
+  --foreground: #e0f2fe;
+  --surface: #0f172a;
+  --surface-hover: #1e3a5f;
+  --border: rgba(14, 165, 233, 0.15);
+  --text-primary: #e0f2fe;
+  --text-secondary: #7dd3fc;
+  --text-muted: #38bdf8;
+  --accent: #0ea5e9;
+  --accent-light: #38bdf8;
+}
+
+[data-theme="forest"] {
+  --background: #0a120e;
+  --foreground: #dcfce7;
+  --surface: #111a15;
+  --surface-hover: #1a3a2a;
+  --border: rgba(34, 197, 94, 0.15);
+  --text-primary: #dcfce7;
+  --text-secondary: #86efac;
+  --text-muted: #4ade80;
+  --accent: #22c55e;
+  --accent-light: #4ade80;
+}
+
+[data-theme="sunset"] {
+  --background: #1a0a0a;
+  --foreground: #fef2f2;
+  --surface: #1f1111;
+  --surface-hover: #3a1a1a;
+  --border: rgba(244, 63, 94, 0.15);
+  --text-primary: #fef2f2;
+  --text-secondary: #fda4af;
+  --text-muted: #fb7185;
+  --accent: #f43f5e;
+  --accent-light: #fb7185;
+}
+
+[data-theme="light"] {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --border: rgba(0, 0, 0, 0.08);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent: #f97316;
+  --accent-light: #fb923c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-glass: rgba(255, 255, 255, 0.05);
@@ -15,26 +95,27 @@
 }
 
 * {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Glassmorphism utilities */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border);
 }
 
 /* Scrollbar styling */
@@ -48,12 +129,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--text-muted);
 }
 
 /* ========================================
@@ -169,9 +250,9 @@ body {
 .shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 100%
+    var(--surface) 0%,
+    var(--surface-hover) 50%,
+    var(--surface) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -185,9 +266,9 @@ body {
   transform: translateY(-2px);
 }
 
-/* Gradient text */
+/* Gradient text — always orange regardless of theme */
 .gradient-text {
-  background: linear-gradient(135deg, #f97316, #fb923c);
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

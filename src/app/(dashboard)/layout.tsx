@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/ui/mobile-nav";
 import { GlobalSearch } from "@/components/layout/global-search";
+import { ThemeProvider } from "@/components/theme-provider";
 import { useAuthStore } from "@/store/auth-store";
 import { Loader2, Flame } from "lucide-react";
 
@@ -70,22 +71,24 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+    <ThemeProvider>
+      <div className="flex h-screen overflow-hidden bg-background">
+        <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} onOpenSearch={() => setSearchOpen(true)} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} onOpenSearch={() => setSearchOpen(true)} />
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <div key={pathname} className="animate-fadeIn">
-            {children}
-          </div>
-        </main>
+          <main className="flex-1 overflow-y-auto p-6">
+            <div key={pathname} className="animate-fadeIn">
+              {children}
+            </div>
+          </main>
+        </div>
+
+        <MobileNav />
+
+        <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
       </div>
-
-      <MobileNav />
-
-      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
-    </div>
+    </ThemeProvider>
   );
 }

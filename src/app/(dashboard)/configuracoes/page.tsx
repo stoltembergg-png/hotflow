@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import {
   Settings,
   User,
-  Shield,
   Bell,
   Palette,
   Puzzle,
@@ -18,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store/auth-store";
+import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 interface UserProfile {
@@ -26,7 +26,7 @@ interface UserProfile {
   email: string;
   role: string;
   avatarUrl: string | null;
-  organization: { name: string; plan: string } | null;
+  organization: { name: string } | null;
 }
 
 interface NotificationPrefs {
@@ -46,8 +46,18 @@ const sections = [
   { key: "plan", label: "Plano", icon: CreditCard },
 ];
 
+const themes = [
+  { key: "dark" as const, label: "Dark", bg: "#030712", accent: "#f97316" },
+  { key: "midnight" as const, label: "Midnight", bg: "#0a0e1a", accent: "#6366f1" },
+  { key: "ocean" as const, label: "Ocean", bg: "#0c1222", accent: "#0ea5e9" },
+  { key: "forest" as const, label: "Forest", bg: "#0a120e", accent: "#22c55e" },
+  { key: "sunset" as const, label: "Sunset", bg: "#1a0a0a", accent: "#f43f5e" },
+  { key: "light" as const, label: "Light", bg: "#f8fafc", accent: "#f97316" },
+];
+
 export default function ConfiguracoesPage() {
   const { user: authUser } = useAuthStore();
+  const { theme, setTheme } = useTheme();
   const [active, setActive] = useState("profile");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,7 +73,7 @@ export default function ConfiguracoesPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Notification prefs (stored in localStorage)
+  // Notification prefs
   const [notifPrefs, setNotifPrefs] = useState<NotificationPrefs>({
     vendas: true,
     campanhas: true,
@@ -71,9 +81,6 @@ export default function ConfiguracoesPage() {
     tarefas: true,
     sistema: true,
   });
-
-  // Theme
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
     fetch("/api/settings")
@@ -88,12 +95,8 @@ export default function ConfiguracoesPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
 
-    // Load notification prefs from localStorage
     const saved = localStorage.getItem("hotflow_notif_prefs");
     if (saved) setNotifPrefs(JSON.parse(saved));
-
-    const savedTheme = localStorage.getItem("hotflow_theme") as "dark" | "light";
-    if (savedTheme) setTheme(savedTheme);
   }, []);
 
   const showToast = (type: "success" | "error", message: string) => {
@@ -112,9 +115,7 @@ export default function ConfiguracoesPage() {
       const json = await res.json();
       if (res.ok) {
         showToast("success", "Perfil atualizado com sucesso");
-        if (json.user) {
-          setProfile((prev) => prev ? { ...prev, ...json.user } : prev);
-        }
+        if (json.user) setProfile((prev) => prev ? { ...prev, ...json.user } : prev);
       } else {
         showToast("error", json.error || "Erro ao salvar");
       }
@@ -161,12 +162,6 @@ export default function ConfiguracoesPage() {
     setNotifPrefs(prefs);
     localStorage.setItem("hotflow_notif_prefs", JSON.stringify(prefs));
     showToast("success", "Preferencias de notificacao salvas");
-  };
-
-  const toggleTheme = (t: "dark" | "light") => {
-    setTheme(t);
-    localStorage.setItem("hotflow_theme", t);
-    showToast("success", `Tema alterado para ${t === "dark" ? "Escuro" : "Claro"}`);
   };
 
   return (
@@ -244,11 +239,7 @@ export default function ConfiguracoesPage() {
                       <Input value={profile?.organization?.name || "-"} disabled className="opacity-50" />
                     </div>
                   </div>
-                  <Button
-                    className="bg-orange-500 hover:bg-orange-600"
-                    onClick={saveProfile}
-                    disabled={saving}
-                  >
+                  <Button className="bg-orange-500 hover:bg-orange-600" onClick={saveProfile} disabled={saving}>
                     <Save className="w-4 h-4 mr-2" />
                     {saving ? "Salvando..." : "Salvar"}
                   </Button>
@@ -308,17 +299,13 @@ export default function ConfiguracoesPage() {
                         }
                         className={cn(
                           "w-10 h-5 rounded-full relative transition-colors duration-200",
-                          notifPrefs[key as keyof NotificationPrefs]
-                            ? "bg-orange-500"
-                            : "bg-zinc-700"
+                          notifPrefs[key as keyof NotificationPrefs] ? "bg-orange-500" : "bg-zinc-700"
                         )}
                       >
                         <div
                           className={cn(
                             "absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200",
-                            notifPrefs[key as keyof NotificationPrefs]
-                              ? "right-0.5"
-                              : "left-0.5"
+                            notifPrefs[key as keyof NotificationPrefs] ? "right-0.5" : "left-0.5"
                           )}
                         />
                       </button>
@@ -332,35 +319,36 @@ export default function ConfiguracoesPage() {
                 <div className="space-y-4 animate-fadeIn">
                   <h2 className="font-bold text-lg">Tema</h2>
                   <p className="text-sm text-zinc-500">Escolha a aparencia da aplicacao.</p>
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => toggleTheme("dark")}
-                      className={cn(
-                        "w-28 h-28 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 border-2",
-                        theme === "dark"
-                          ? "bg-[#09090b] border-orange-500"
-                          : "bg-zinc-800 border-zinc-700 hover:border-zinc-600"
-                      )}
-                    >
-                      <div className="text-center">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700 mx-auto mb-2" />
-                        <span className="text-xs text-zinc-400">Escuro</span>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => toggleTheme("light")}
-                      className={cn(
-                        "w-28 h-28 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 border-2",
-                        theme === "light"
-                          ? "bg-white border-orange-500"
-                          : "bg-zinc-800 border-zinc-700 hover:border-zinc-600"
-                      )}
-                    >
-                      <div className="text-center">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-100 border border-zinc-300 mx-auto mb-2" />
-                        <span className="text-xs text-zinc-600">Claro</span>
-                      </div>
-                    </button>
+                  <div className="grid grid-cols-3 gap-3">
+                    {themes.map((t) => (
+                      <button
+                        key={t.key}
+                        onClick={() => setTheme(t.key)}
+                        className={cn(
+                          "relative w-full aspect-[4/3] rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-200 border-2",
+                          theme === t.key
+                            ? "border-orange-500 shadow-lg shadow-orange-500/20"
+                            : "border-zinc-700 hover:border-zinc-600"
+                        )}
+                        style={{ backgroundColor: t.bg }}
+                      >
+                        {/* Preview elements */}
+                        <div className="flex gap-1.5">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: t.accent }} />
+                          <div className="w-3 h-3 rounded-full bg-white/20" />
+                          <div className="w-3 h-3 rounded-full bg-white/10" />
+                        </div>
+                        <div className="w-16 h-1.5 rounded-full" style={{ backgroundColor: t.accent, opacity: 0.6 }} />
+                        <span className="text-[10px] font-medium" style={{ color: t.accent }}>
+                          {t.label}
+                        </span>
+                        {theme === t.key && (
+                          <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center">
+                            <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -389,10 +377,7 @@ export default function ConfiguracoesPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-bold">
-                          Plano Atual:{" "}
-                          <span className="gradient-text">
-                            {profile?.organization?.plan || "Free"}
-                          </span>
+                          Plano Atual: <span className="gradient-text">Free</span>
                         </p>
                         <p className="text-sm text-zinc-400">Funcionalidades basicas</p>
                       </div>
