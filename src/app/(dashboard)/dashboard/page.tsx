@@ -47,6 +47,18 @@ import {
   Legend,
 } from "recharts";
 
+// Icon name -> component mapper (API sends strings, frontend needs components)
+const ICON_MAP: Record<string, React.ElementType> = {
+  DollarSign, TrendingUp, TrendingDown, ShoppingCart, Users, UserPlus, Target,
+  BarChart3, Zap, CreditCard, AlertTriangle, Megaphone, RotateCcw, FileText,
+  Flame, CheckCircle2, Clock, Package, Wallet, Sparkles, Activity, ArrowRight,
+};
+
+function MetricIcon({ name }: { name: string }) {
+  const Icon = ICON_MAP[name] || Activity;
+  return <Icon />;
+}
+
 // Types
 interface MetricCard {
   label: string;
@@ -274,7 +286,7 @@ export default function DashboardPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 stagger">
           {data.metrics.map((metric, i) => {
-            const Icon = metric.icon;
+            const Icon = ICON_MAP[metric.icon as string] || Activity;
             const isPositive = metric.change >= 0;
             return (
               <div
@@ -593,7 +605,7 @@ export default function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
             {data.attention.map((item) => {
-              const Icon = item.icon;
+              const Icon = ICON_MAP[item.icon as string] || AlertTriangle;
               return (
                 <button
                   key={item.id}
