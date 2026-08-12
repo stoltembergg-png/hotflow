@@ -17,13 +17,19 @@ import {
   AlertTriangle,
   ArrowRight,
   RefreshCw,
-  Flame,
   CheckCircle2,
   Clock,
   Package,
   Megaphone,
   RotateCcw,
   FileText,
+  Flame,
+  Filter,
+  PieChart as PieIcon,
+  Trophy,
+  Activity,
+  Wallet,
+  Sparkles,
 } from "lucide-react";
 import {
   AreaChart,
@@ -93,6 +99,31 @@ const PIE_COLORS = [
   CHART_COLORS.pink,
   CHART_COLORS.cyan,
 ];
+
+// Funnel stage icons
+const FUNNEL_ICONS: Record<string, React.ElementType> = {
+  Leads: UserPlus,
+  Checkout: ShoppingCart,
+  Pagamento: CreditCard,
+  Venda: CheckCircle2,
+  "Cliente Recorrente": RotateCcw,
+  Visitantes: BarChart3,
+};
+
+// Chart header icon config
+function ChartHeader({ icon: Icon, title, subtitle }: { icon: React.ElementType; title: string; subtitle: string }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-2.5">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.06]">
+          <Icon className="w-4 h-4 text-orange-400" />
+        </div>
+        <h3 className="text-sm font-semibold text-zinc-200">{title}</h3>
+      </div>
+      <span className="text-xs text-zinc-500">{subtitle}</span>
+    </div>
+  );
+}
 
 // Skeleton components
 function MetricSkeleton() {
@@ -196,13 +227,13 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-slideUp">
         <div>
           <h1 className="text-2xl font-bold text-zinc-100">
-            {greeting}, <span className="gradient-text">{user?.name || "Usuário"}</span> 👋
+            {greeting}, <span className="gradient-text">{user?.name || "Usuario"}</span>
           </h1>
           <p className="text-sm text-zinc-500 mt-1">
-            Aqui está o resumo do seu negócio hoje
+            Aqui esta o resumo do seu negocio hoje
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -225,7 +256,7 @@ export default function DashboardPage() {
           <button
             onClick={fetchData}
             disabled={loading}
-            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white glass-card rounded-xl transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white glass-card rounded-xl transition-colors card-hover"
           >
             <RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
             Atualizar
@@ -241,39 +272,45 @@ export default function DashboardPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 stagger">
           {data.metrics.map((metric, i) => {
             const Icon = metric.icon;
             const isPositive = metric.change >= 0;
             return (
               <div
                 key={i}
-                className="glass-card p-5 group hover:border-orange-500/20 transition-all duration-300"
+                className="glass-card p-5 group card-hover hover:border-orange-500/20 relative overflow-hidden"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className={cn("flex items-center justify-center w-10 h-10 rounded-xl", metric.bgColor)}>
-                    <Icon className={cn("w-5 h-5", metric.color)} />
-                  </div>
-                  <div
-                    className={cn(
-                      "flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold",
-                      isPositive
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-red-500/10 text-red-400"
-                    )}
-                  >
-                    {isPositive ? (
-                      <TrendingUp className="w-3 h-3" />
-                    ) : (
-                      <TrendingDown className="w-3 h-3" />
-                    )}
-                    {formatPercent(Math.abs(metric.change))}
-                  </div>
+                {/* Gradient glow on hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <div className={cn("absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl", metric.bgColor)} />
                 </div>
-                <p className="text-2xl font-bold text-zinc-100 mb-0.5">
-                  {metric.value}
-                </p>
-                <p className="text-xs text-zinc-500">{metric.label}</p>
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={cn("flex items-center justify-center w-10 h-10 rounded-xl", metric.bgColor)}>
+                      <Icon className={cn("w-5 h-5", metric.color)} />
+                    </div>
+                    <div
+                      className={cn(
+                        "flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold",
+                        isPositive
+                          ? "bg-green-500/10 text-green-400"
+                          : "bg-red-500/10 text-red-400"
+                      )}
+                    >
+                      {isPositive ? (
+                        <TrendingUp className="w-3 h-3" />
+                      ) : (
+                        <TrendingDown className="w-3 h-3" />
+                      )}
+                      {formatPercent(Math.abs(metric.change))}
+                    </div>
+                  </div>
+                  <p className="text-2xl font-bold text-zinc-100 mb-0.5 animate-countUp">
+                    {metric.value}
+                  </p>
+                  <p className="text-xs text-zinc-500">{metric.label}</p>
+                </div>
               </div>
             );
           })}
@@ -281,7 +318,7 @@ export default function DashboardPage() {
       )}
 
       {/* Charts Row 1: Faturamento + Vendas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 stagger">
         {loading ? (
           <>
             <ChartSkeleton />
@@ -290,11 +327,8 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Faturamento Chart */}
-            <div className="glass-card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-zinc-200">Faturamento</h3>
-                <span className="text-xs text-zinc-500">Últimos 30 dias</span>
-              </div>
+            <div className="glass-card p-5 card-hover">
+              <ChartHeader icon={Wallet} title="Faturamento" subtitle="Ultimos 30 dias" />
               <div className="h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.faturamentoChart}>
@@ -322,11 +356,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Vendas Chart */}
-            <div className="glass-card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-zinc-200">Vendas vs Meta</h3>
-                <span className="text-xs text-zinc-500">Últimos 30 dias</span>
-              </div>
+            <div className="glass-card p-5 card-hover">
+              <ChartHeader icon={ShoppingCart} title="Vendas vs Meta" subtitle="Ultimos 30 dias" />
               <div className="h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.vendasChart}>
@@ -350,7 +381,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Row 2: Lucro + Origem */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 stagger">
         {loading ? (
           <>
             <ChartSkeleton />
@@ -359,11 +390,8 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Lucro Chart */}
-            <div className="glass-card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-zinc-200">Lucro vs Custos</h3>
-                <span className="text-xs text-zinc-500">Últimos 30 dias</span>
-              </div>
+            <div className="glass-card p-5 card-hover">
+              <ChartHeader icon={Activity} title="Lucro vs Custos" subtitle="Ultimos 30 dias" />
               <div className="h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.lucroChart}>
@@ -390,11 +418,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Origem das Vendas (Donut) */}
-            <div className="glass-card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-zinc-200">Origem das Vendas</h3>
-                <span className="text-xs text-zinc-500">Distribuição</span>
-              </div>
+            <div className="glass-card p-5 card-hover">
+              <ChartHeader icon={PieIcon} title="Origem das Vendas" subtitle="Distribuicao" />
               <div className="h-[280px] flex items-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -428,7 +453,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Row 3: Produtos Top + Campanhas ROAS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 stagger">
         {loading ? (
           <>
             <ChartSkeleton />
@@ -437,11 +462,8 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Produtos mais vendidos */}
-            <div className="glass-card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-zinc-200">Produtos Mais Vendidos</h3>
-                <span className="text-xs text-zinc-500">Top 6</span>
-              </div>
+            <div className="glass-card p-5 card-hover">
+              <ChartHeader icon={Package} title="Produtos Mais Vendidos" subtitle="Top 6" />
               <div className="h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.produtosTop} layout="vertical">
@@ -456,11 +478,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Campanhas por ROAS */}
-            <div className="glass-card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-zinc-200">Campanhas por ROAS</h3>
-                <span className="text-xs text-zinc-500">Performance</span>
-              </div>
+            <div className="glass-card p-5 card-hover">
+              <ChartHeader icon={Trophy} title="Campanhas por ROAS" subtitle="Performance" />
               <div className="h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.campanhasRoas}>
@@ -494,17 +513,25 @@ export default function DashboardPage() {
       {loading ? (
         <FunnelSkeleton />
       ) : (
-        <div className="glass-card p-5">
-          <h3 className="text-sm font-semibold text-zinc-200 mb-6">Funil de Conversão</h3>
+        <div className="glass-card p-5 animate-slideUp card-hover">
+          <div className="flex items-center gap-2.5 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.06]">
+              <Filter className="w-4 h-4 text-orange-400" />
+            </div>
+            <h3 className="text-sm font-semibold text-zinc-200">Funil de Conversao</h3>
+          </div>
           <div className="space-y-3">
             {data.funnel.map((stage, i) => {
               const maxCount = data.funnel[0]?.count || 1;
               const widthPercent = (stage.count / maxCount) * 100;
+              const funnelIcon = FUNNEL_ICONS[stage.stage] || Activity;
+              const FunnelIcon = funnelIcon;
               return (
-                <div key={i} className="flex items-center gap-4">
-                  <span className="w-32 text-xs text-zinc-400 text-right shrink-0">
+                <div key={i} className="flex items-center gap-4 animate-slideUp" style={{ animationDelay: `${i * 80}ms` }}>
+                  <div className="flex items-center gap-2 w-36 text-xs text-zinc-400 text-right shrink-0 justify-end">
+                    <FunnelIcon className="w-3.5 h-3.5" style={{ color: stage.color }} />
                     {stage.stage}
-                  </span>
+                  </div>
                   <div className="flex-1 relative">
                     <div className="h-9 rounded-lg bg-white/[0.03] overflow-hidden">
                       <div
@@ -522,10 +549,10 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   {i < data.funnel.length - 1 && (
-                    <span className="text-[10px] text-zinc-600 shrink-0">
+                    <span className="text-[10px] text-zinc-600 shrink-0 w-12 text-right">
                       {data.funnel[i + 1]?.count
                         ? `${((data.funnel[i + 1].count / stage.count) * 100).toFixed(1)}%`
-                        : "—"}
+                        : "--"}
                     </span>
                   )}
                 </div>
@@ -552,26 +579,26 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : (
-        <div className="glass-card p-5">
+        <div className="glass-card p-5 animate-slideUp">
           <div className="flex items-center gap-2 mb-5">
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-500/10">
               <AlertTriangle className="w-4 h-4 text-red-400" />
             </div>
             <h3 className="text-sm font-semibold text-zinc-200">
-              O Que Precisa de Atenção
+              O Que Precisa de Atencao
             </h3>
             <span className="px-2 py-0.5 text-[10px] font-bold bg-red-500/10 text-red-400 rounded-full ml-1">
               {data.attention.length}
             </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 stagger">
             {data.attention.map((item) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.id}
                   className={cn(
-                    "flex items-start gap-3 p-4 rounded-xl text-left transition-all hover:bg-white/[0.04] border",
+                    "flex items-start gap-3 p-4 rounded-xl text-left transition-all hover:bg-white/[0.04] border card-hover",
                     item.severity === "danger"
                       ? "border-red-500/10 hover:border-red-500/20"
                       : item.severity === "warning"

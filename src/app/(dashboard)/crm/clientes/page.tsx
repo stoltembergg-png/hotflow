@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, Plus, Eye, Trash2, Mail, Phone, Tag } from "lucide-react";
+import { Search, Plus, Eye, Trash2, Mail, Phone, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -119,7 +119,7 @@ export default function ClientesPage() {
           <div className="glass-card p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">{showDetail.name}</h2>
-              <Button variant="ghost" size="sm" onClick={() => setShowDetail(null)}>✕</Button>
+              <Button variant="ghost" size="sm" onClick={() => setShowDetail(null)}><X className="w-4 h-4" /></Button>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
