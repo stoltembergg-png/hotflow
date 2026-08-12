@@ -1,0 +1,315 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  currency  String   @default("BRL")
+  timezone  String   @default("America/Sao_Paulo")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users          User[]
+  customers      Customer[]
+  leads          Lead[]
+  products       Product[]
+  offers         Offer[]
+  orders         Order[]
+  subscriptions  Subscription[]
+  campaigns      Campaign[]
+  trafficSources TrafficSource[]
+  contents       Content[]
+  tasks          Task[]
+  expenses       Expense[]
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+  tags           Tag[]
+}
+
+model User {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String       @unique
+  password       String
+  role           String       @default("viewer")
+  avatarUrl      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Customer {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String?
+  phone          String?
+  telegram       String?
+  status         String       @default("active")
+  source         String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  tags           CustomerTag[]
+  activities     Activity[]
+  orders         Order[]
+  subscriptions  Subscription[]
+}
+
+model Lead {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  contact        String?
+  source         String?
+  campaign       String?
+  productInterest String?
+  stage          String       @default("new")
+  potentialValue Float?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Product {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  description      String?
+  category         String?
+  price            Float
+  promotionalPrice Float?
+  status           String       @default("active")
+  type             String       @default("product")
+  imageUrl         String?
+  checkoutUrl      String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  organizationId   String       @db.ObjectId
+  organization     Organization @relation(fields: [organizationId], references: [id])
+  orders           Order[]
+  offers           Offer[]
+}
+
+model Offer {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  productId        String?      @db.ObjectId
+  product          Product?     @relation(fields: [productId], references: [id])
+  originalPrice    Float?
+  promotionalPrice Float?
+  discount         Float?
+  type             String       @default("standard")
+  status           String       @default("active")
+  startDate        DateTime?
+  endDate          DateTime?
+  cta              String?
+  link             String?
+  description      String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  organizationId   String       @db.ObjectId
+  organization     Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Order {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  totalAmount    Float
+  discount       Float        @default(0)
+  fees           Float        @default(0)
+  netAmount      Float?
+  paymentMethod  String?
+  status         String       @default("pending")
+  source         String?
+  customerId     String?      @db.ObjectId
+  customer       Customer?    @relation(fields: [customerId], references: [id])
+  productId      String?      @db.ObjectId
+  product        Product?     @relation(fields: [productId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Subscription {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  plan           String
+  amount         Float
+  status         String       @default("active")
+  startDate      DateTime     @default(now())
+  nextBilling    DateTime?
+  customerId     String       @db.ObjectId
+  customer       Customer?    @relation(fields: [customerId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Campaign {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  platform       String?
+  objective      String?
+  budget         Float?
+  investment     Float?
+  status         String           @default("active")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  organizationId String           @db.ObjectId
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  metrics        CampaignMetric[]
+}
+
+model CampaignMetric {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  date         DateTime @default(now())
+  impressions  Int      @default(0)
+  clicks       Int      @default(0)
+  leads        Int      @default(0)
+  conversions  Int      @default(0)
+  revenue      Float    @default(0)
+  spend        Float    @default(0)
+  campaignId   String   @db.ObjectId
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  campaign     Campaign @relation(fields: [campaignId], references: [id])
+}
+
+model TrafficSource {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  campaign       String?
+  platform       String?
+  adSet          String?
+  creative       String?
+  investment     Float        @default(0)
+  impressions    Int          @default(0)
+  reach          Int          @default(0)
+  clicks         Int          @default(0)
+  ctr            Float        @default(0)
+  cpc            Float        @default(0)
+  leads          Int          @default(0)
+  conversions    Int          @default(0)
+  revenue        Float        @default(0)
+  roas           Float        @default(0)
+  cpa            Float        @default(0)
+  cpl            Float        @default(0)
+  roi            Float        @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Content {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  contentType    String       @default("post")
+  platform       String?
+  category       String?
+  status         String       @default("idea")
+  publishDate    DateTime?
+  caption        String?
+  cta            String?
+  hashtags       String?
+  fileUrl        String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Task {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String?
+  assignee       String?
+  priority       String       @default("medium")
+  dueDate        DateTime?
+  status         String       @default("todo")
+  project        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Expense {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  description    String
+  amount         Float
+  category       String       @default("outros")
+  date           DateTime     @default(now())
+  recurring      Boolean      @default(false)
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Notification {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  message        String
+  type           String       @default("system")
+  read           Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model AuditLog {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String?      @db.ObjectId
+  action         String
+  module         String?
+  ip             String?
+  details        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Tag {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  color          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String       @db.ObjectId
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  customers      CustomerTag[]
+}
+
+model CustomerTag {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  customerId String   @db.ObjectId
+  customer   Customer @relation(fields: [customerId], references: [id])
+  tagId      String   @db.ObjectId
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, tagId])
+}
+
+model Activity {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  type           String
+  description    String?
+  customerId     String    @db.ObjectId
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
