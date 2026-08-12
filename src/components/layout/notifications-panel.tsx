@@ -68,6 +68,12 @@ function timeAgo(dateStr: string): string {
 export function NotificationsPanel({ onClose }: { onClose: () => void }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => onClose(), 150);
+  };
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -115,9 +121,18 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] glass-card shadow-2xl shadow-black/40 rounded-2xl overflow-hidden z-50 border border-white/[0.08]">
+    <div
+      className={cn(
+        "absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] rounded-2xl overflow-hidden z-50",
+        "bg-zinc-900 border border-white/[0.1] shadow-2xl shadow-black/50",
+        "transition-all duration-150 ease-out origin-top-right",
+        isClosing
+          ? "opacity-0 scale-95 translate-y-[-4px]"
+          : "opacity-100 scale-100 translate-y-0"
+      )}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] bg-zinc-900">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-zinc-400" />
           <h3 className="text-sm font-semibold text-zinc-200">Notificacoes</h3>
@@ -138,7 +153,7 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
             </button>
           )}
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="flex items-center justify-center w-7 h-7 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors"
           >
             <X className="w-4 h-4" />
@@ -147,7 +162,7 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Notifications list */}
-      <div className="max-h-[400px] overflow-y-auto">
+      <div className="max-h-[400px] overflow-y-auto bg-zinc-900">
         {loading ? (
           <div className="px-5 py-10 text-center">
             <div className="w-6 h-6 border-2 border-zinc-700 border-t-orange-500 rounded-full animate-spin mx-auto mb-2" />
@@ -159,16 +174,17 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
             <p className="text-sm text-zinc-500">Nenhuma notificacao</p>
           </div>
         ) : (
-          notifications.map((notif) => {
+          notifications.map((notif, i) => {
             const Icon = typeIcons[notif.type] || Bell;
             const styles = typeStyles[notif.type] || typeStyles.info;
             return (
               <div
                 key={notif.id}
                 className={cn(
-                  "flex items-start gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0 group transition-all duration-200",
-                  !notif.read && "bg-orange-500/[0.03]"
+                  "flex items-start gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0 group transition-all duration-200 bg-zinc-900",
+                  !notif.read && "bg-orange-500/[0.05]"
                 )}
+                style={{ animationDelay: `${i * 30}ms` }}
               >
                 <div
                   className={cn(
@@ -217,9 +233,9 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
 
       {/* Footer */}
       {notifications.length > 0 && (
-        <div className="px-5 py-3 border-t border-white/[0.06]">
+        <div className="px-5 py-3 border-t border-white/[0.06] bg-zinc-900">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="w-full py-2 text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors"
           >
             Ver todas as notificacoes
