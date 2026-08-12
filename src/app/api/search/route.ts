@@ -1,10 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth-utils";
+import { verifyToken, type JwtPayload } from "@/lib/auth";
+
+function getAuth(request: NextRequest): JwtPayload | null {
+  // Try cookie first
+  const cookieToken = request.cookies.get("hotflow-token")?.value;
+  if (cookieToken) {
+    const payload = verifyToken(cookieToken);
+    if (payload) return payload;
+  }
+  // Fallback to Authorization header
+  const authHeader = request.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const headerToken = authHeader.slice(7);
+    const payload = verifyToken(headerToken);
+    if (payload) return payload;
+  }
+  return null;
+}
 
 export async function GET(request: NextRequest) {
-  const auth = requireAuth(request);
-  if (auth instanceof Response) return auth;
+  const auth = getAuth(request);
+  if (!auth) {
+    return NextResponse.json({ error: "Nao autenticado" }, { status: 401 });
+  }
   const orgId = auth.orgId;
 
   const { searchParams } = new URL(request.url);

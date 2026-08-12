@@ -14,10 +14,10 @@ import {
   CheckSquare,
   ArrowRight,
   Loader2,
-  Clock,
   CornerDownLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth-store";
 
 interface SearchResult {
   id: string;
@@ -50,6 +50,7 @@ export function GlobalSearch({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const token = useAuthStore((s) => s.token);
 
   const search = useCallback(async (q: string) => {
     if (!q.trim()) {
@@ -58,17 +59,27 @@ export function GlobalSearch({
     }
     setLoading(true);
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { credentials: "include" });
+      const headers: Record<string, string> = {};
+      // Send token both as cookie AND as Authorization header for maximum compatibility
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, {
+        credentials: "include",
+        headers,
+      });
       if (res.ok) {
         const data = await res.json();
         setResults(data.results || []);
+      } else {
+        setResults([]);
       }
     } catch {
       setResults([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (open) {
@@ -105,7 +116,6 @@ export function GlobalSearch({
     }
   };
 
-  // Group results by type
   const grouped = results.reduce<Record<string, SearchResult[]>>((acc, r) => {
     (acc[r.type] = acc[r.type] || []).push(r);
     return acc;
@@ -114,22 +124,10 @@ export function GlobalSearch({
   if (!open) return null;
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 z-50 flex items-start justify-center pt-[15vh]",
-        "transition-all duration-200",
-        open ? "opacity-100" : "opacity-0 pointer-events-none"
-      )}
-    >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200"
-        onClick={onClose}
-      />
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200" onClick={onClose} />
 
-      {/* Search Dialog */}
-      <div className="relative w-full max-w-xl mx-4 glass rounded-2xl overflow-hidden animate-scaleIn shadow-2xl shadow-black/50 border border-white/[0.1]">
-        {/* Input */}
+      <div className="relative w-full max-w-xl mx-4 bg-surface border border-white/[0.1] rounded-2xl overflow-hidden animate-scaleIn shadow-2xl shadow-black/50">
         <div className="flex items-center gap-3 px-5 h-14 border-b border-white/[0.06]">
           {loading ? (
             <Loader2 className="w-5 h-5 text-orange-400 animate-spin" />
@@ -148,33 +146,20 @@ export function GlobalSearch({
           <kbd className="hidden md:flex items-center px-1.5 py-0.5 text-[10px] font-medium text-zinc-600 bg-white/[0.06] rounded-md border border-white/[0.08]">
             ESC
           </kbd>
-          <button
-            onClick={onClose}
-            className="flex items-center justify-center w-7 h-7 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
 
-        {/* Results */}
         <div className="max-h-[400px] overflow-y-auto p-2">
           {!query.trim() && (
             <div className="px-4 py-8 text-center">
               <Search className="w-8 h-8 text-zinc-700 mx-auto mb-3" />
-              <p className="text-sm text-zinc-400">
-                Digite para buscar em todo o sistema
-              </p>
-              <p className="text-xs text-zinc-600 mt-1">
-                Clientes, leads, produtos, vendas, campanhas, conteudo, tarefas
-              </p>
+              <p className="text-sm text-zinc-400">Digite para buscar em todo o sistema</p>
+              <p className="text-xs text-zinc-600 mt-1">Clientes, leads, produtos, vendas, campanhas, conteudo, tarefas</p>
             </div>
           )}
 
           {query.trim() && !loading && results.length === 0 && (
             <div className="px-4 py-8 text-center">
-              <p className="text-sm text-zinc-500">
-                Nenhum resultado para &ldquo;{query}&rdquo;
-              </p>
+              <p className="text-sm text-zinc-500">Nenhum resultado para &ldquo;{query}&rdquo;</p>
             </div>
           )}
 
@@ -217,11 +202,10 @@ export function GlobalSearch({
           })}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-between px-4 py-2.5 border-t border-white/[0.06] text-[11px] text-zinc-600">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <span className="px-1 py-0.5 bg-white/[0.06] rounded text-[9px] font-mono">↑↓</span>
+              <span className="px-1 py-0.5 bg-white/[0.06] rounded text-[9px] font-mono">&uarr;&darr;</span>
               navegar
             </span>
             <span className="flex items-center gap-1">
