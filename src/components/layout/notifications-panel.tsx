@@ -135,7 +135,7 @@ export function NotificationsPanel({ open, onClose, onUnreadChange }: Notificati
     <div
       className={cn(
         "absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] rounded-2xl overflow-hidden z-50",
-        "bg-zinc-900 border border-white/[0.1] shadow-2xl shadow-black/50",
+        "bg-surface border border-white/[0.1] shadow-2xl shadow-black/50",
         "transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right",
         open
           ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
@@ -143,7 +143,7 @@ export function NotificationsPanel({ open, onClose, onUnreadChange }: Notificati
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] bg-zinc-900">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-zinc-400" />
           <h3 className="text-sm font-semibold text-zinc-200">Notificacoes</h3>
@@ -173,7 +173,7 @@ export function NotificationsPanel({ open, onClose, onUnreadChange }: Notificati
       </div>
 
       {/* Notifications list */}
-      <div className="max-h-[400px] overflow-y-auto bg-zinc-900">
+      <div className="max-h-[400px] overflow-y-auto">
         {loading ? (
           <div className="px-5 py-10 text-center">
             <div className="w-6 h-6 border-2 border-zinc-700 border-t-orange-500 rounded-full animate-spin mx-auto mb-2" />
@@ -192,7 +192,7 @@ export function NotificationsPanel({ open, onClose, onUnreadChange }: Notificati
               <div
                 key={notif.id}
                 className={cn(
-                  "flex items-start gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0 group transition-all duration-200 bg-zinc-900",
+                  "flex items-start gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0 group transition-all duration-200",
                   !notif.read && "bg-orange-500/[0.05]"
                 )}
                 style={{ animationDelay: `${i * 30}ms` }}
@@ -244,7 +244,7 @@ export function NotificationsPanel({ open, onClose, onUnreadChange }: Notificati
 
       {/* Footer */}
       {notifications.length > 0 && (
-        <div className="px-5 py-3 border-t border-white/[0.06] bg-zinc-900">
+        <div className="px-5 py-3 border-t border-white/[0.06]">
           <button
             onClick={onClose}
             className="w-full py-2 text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors"
