@@ -14,6 +14,8 @@ import {
   CheckSquare,
   ArrowRight,
   Loader2,
+  Clock,
+  CornerDownLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +33,7 @@ const typeConfig: Record<SearchResult["type"], { icon: React.ElementType; label:
   product: { icon: Package, label: "Produtos", color: "text-purple-400" },
   order: { icon: ShoppingCart, label: "Vendas", color: "text-orange-400" },
   campaign: { icon: Megaphone, label: "Campanhas", color: "text-pink-400" },
-  content: { icon: FileText, label: "Conteúdo", color: "text-cyan-400" },
+  content: { icon: FileText, label: "Conteudo", color: "text-cyan-400" },
   task: { icon: CheckSquare, label: "Tarefas", color: "text-yellow-400" },
 };
 
@@ -112,12 +114,21 @@ export function GlobalSearch({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+    <div
+      className={cn(
+        "fixed inset-0 z-50 flex items-start justify-center pt-[15vh]",
+        "transition-all duration-200",
+        open ? "opacity-100" : "opacity-0 pointer-events-none"
+      )}
+    >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200"
+        onClick={onClose}
+      />
 
       {/* Search Dialog */}
-      <div className="relative w-full max-w-xl mx-4 glass-card shadow-2xl shadow-black/50 rounded-2xl overflow-hidden animate-fadeIn">
+      <div className="relative w-full max-w-xl mx-4 glass rounded-2xl overflow-hidden animate-scaleIn shadow-2xl shadow-black/50 border border-white/[0.1]">
         {/* Input */}
         <div className="flex items-center gap-3 px-5 h-14 border-b border-white/[0.06]">
           {loading ? (
@@ -134,6 +145,9 @@ export function GlobalSearch({
             placeholder="Buscar clientes, leads, produtos, campanhas..."
             className="flex-1 bg-transparent text-sm text-zinc-200 placeholder:text-zinc-600 outline-none"
           />
+          <kbd className="hidden md:flex items-center px-1.5 py-0.5 text-[10px] font-medium text-zinc-600 bg-white/[0.06] rounded-md border border-white/[0.08]">
+            ESC
+          </kbd>
           <button
             onClick={onClose}
             className="flex items-center justify-center w-7 h-7 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors"
@@ -146,11 +160,12 @@ export function GlobalSearch({
         <div className="max-h-[400px] overflow-y-auto p-2">
           {!query.trim() && (
             <div className="px-4 py-8 text-center">
-              <p className="text-sm text-zinc-500">
+              <Search className="w-8 h-8 text-zinc-700 mx-auto mb-3" />
+              <p className="text-sm text-zinc-400">
                 Digite para buscar em todo o sistema
               </p>
               <p className="text-xs text-zinc-600 mt-1">
-                Clientes, leads, produtos, vendas, campanhas, conteúdo, tarefas
+                Clientes, leads, produtos, vendas, campanhas, conteudo, tarefas
               </p>
             </div>
           )}
@@ -158,7 +173,7 @@ export function GlobalSearch({
           {query.trim() && !loading && results.length === 0 && (
             <div className="px-4 py-8 text-center">
               <p className="text-sm text-zinc-500">
-                Nenhum resultado para &ldquo;{query}&rdquo;
+                Nenhum resultado para "{query}"
               </p>
             </div>
           )}
@@ -182,7 +197,7 @@ export function GlobalSearch({
                         onClose();
                       }}
                       className={cn(
-                        "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-colors",
+                        "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all duration-150",
                         globalIdx === selectedIndex
                           ? "bg-orange-500/10 text-orange-300"
                           : "text-zinc-300 hover:bg-white/[0.04]"
@@ -205,9 +220,18 @@ export function GlobalSearch({
         {/* Footer */}
         <div className="flex items-center justify-between px-4 py-2.5 border-t border-white/[0.06] text-[11px] text-zinc-600">
           <div className="flex items-center gap-3">
-            <span>↑↓ navegar</span>
-            <span>↵ selecionar</span>
-            <span>esc fechar</span>
+            <span className="flex items-center gap-1">
+              <span className="px-1 py-0.5 bg-white/[0.06] rounded text-[9px] font-mono">↑↓</span>
+              navegar
+            </span>
+            <span className="flex items-center gap-1">
+              <CornerDownLeft className="w-3 h-3" />
+              selecionar
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1 py-0.5 bg-white/[0.06] rounded text-[9px] font-mono">ESC</kbd>
+              fechar
+            </span>
           </div>
           <span>{results.length} resultado{results.length !== 1 ? "s" : ""}</span>
         </div>
