@@ -28,64 +28,63 @@ export default function DashboardLayout({
         router.push("/auth/login?redirect=" + encodeURIComponent(pathname));
       }
     });
-  }, [router, pathname, checkAuth, setLoading]);
+  }, [pathname]);
 
-  // Keyboard shortcut for search
+  // Cmd+K search
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setSearchOpen((prev) => !prev);
+        setSearchOpen(true);
       }
+      if (e.key === "Escape") setSearchOpen(false);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  // Close sidebar on route change (mobile)
-  useEffect(() => {
-    setSidebarCollapsed(false);
-  }, [pathname]);
-
+  // Show loading screen while auth is being checked
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#09090b]">
-        <div className="flex flex-col items-center gap-4">
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4 animate-fadeIn">
           <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-400">
             <Flame className="w-8 h-8 text-white" />
           </div>
-          <Loader2 className="w-6 h-6 text-orange-400 animate-spin" />
+          <div className="flex items-center gap-2 text-zinc-400">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Carregando...</span>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Don't render anything if not authenticated (redirect is happening)
   if (!user) {
-    return null;
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+      </div>
+    );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#09090b]">
-      {/* Desktop Sidebar */}
-      <Sidebar
-        collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
-      {/* Main Content */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <Header
-          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-          onOpenSearch={() => setSearchOpen(true)}
-        />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
-          {children}
+    <div className="flex h-screen overflow-hidden bg-background">
+      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} onOpenSearch={() => setSearchOpen(true)} />
+
+        <main className="flex-1 overflow-y-auto p-6">
+          <div key={pathname} className="animate-fadeIn">
+            {children}
+          </div>
         </main>
       </div>
 
-      {/* Mobile Bottom Nav */}
       <MobileNav />
 
-      {/* Global Search */}
       <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
