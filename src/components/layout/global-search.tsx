@@ -173,7 +173,7 @@ export function GlobalSearch({
           {query.trim() && !loading && results.length === 0 && (
             <div className="px-4 py-8 text-center">
               <p className="text-sm text-zinc-500">
-                Nenhum resultado para "{query}"
+                Nenhum resultado para &ldquo;{query}&rdquo;
               </p>
             </div>
           )}
