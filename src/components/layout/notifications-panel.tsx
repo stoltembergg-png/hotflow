@@ -65,15 +65,15 @@ function timeAgo(dateStr: string): string {
   return `${days}d`;
 }
 
-export function NotificationsPanel({ onClose }: { onClose: () => void }) {
+interface NotificationsPanelProps {
+  open: boolean;
+  onClose: () => void;
+  onUnreadChange?: (count: number) => void;
+}
+
+export function NotificationsPanel({ open, onClose, onUnreadChange }: NotificationsPanelProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isClosing, setIsClosing] = useState(false);
-
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => onClose(), 150);
-  };
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -81,24 +81,30 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
       if (res.ok) {
         const json = await res.json();
         setNotifications(json.data || []);
+        onUnreadChange?.(json.unread || 0);
       }
     } catch {
       // silent
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [onUnreadChange]);
 
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // Refetch when panel opens
+  useEffect(() => {
+    if (open) fetchNotifications();
+  }, [open, fetchNotifications]);
 
   const markAsRead = async (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
+    const newCount = notifications.filter((n) => !n.read && n.id !== id).length;
+    onUnreadChange?.(newCount);
     await fetch("/api/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -107,12 +113,17 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
   };
 
   const dismissNotification = async (id: string) => {
+    const notif = notifications.find((n) => n.id === id);
     setNotifications((prev) => prev.filter((n) => n.id !== id));
+    if (notif && !notif.read) {
+      onUnreadChange?.(Math.max(0, notifications.filter((n) => !n.read && n.id !== id).length));
+    }
     await fetch(`/api/notifications?id=${id}`, { method: "DELETE" });
   };
 
   const markAllRead = async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    onUnreadChange?.(0);
     await fetch("/api/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -125,10 +136,10 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
       className={cn(
         "absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-2rem)] rounded-2xl overflow-hidden z-50",
         "bg-zinc-900 border border-white/[0.1] shadow-2xl shadow-black/50",
-        "transition-all duration-150 ease-out origin-top-right",
-        isClosing
-          ? "opacity-0 scale-95 translate-y-[-4px]"
-          : "opacity-100 scale-100 translate-y-0"
+        "transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right",
+        open
+          ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
       )}
     >
       {/* Header */}
@@ -136,14 +147,14 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-zinc-400" />
           <h3 className="text-sm font-semibold text-zinc-200">Notificacoes</h3>
-          {unreadCount > 0 && (
+          {notifications.filter((n) => !n.read).length > 0 && (
             <span className="px-2 py-0.5 text-[10px] font-bold bg-orange-500 text-white rounded-full">
-              {unreadCount}
+              {notifications.filter((n) => !n.read).length}
             </span>
           )}
         </div>
         <div className="flex items-center gap-1">
-          {unreadCount > 0 && (
+          {notifications.filter((n) => !n.read).length > 0 && (
             <button
               onClick={markAllRead}
               className="flex items-center gap-1 px-2 py-1 text-[11px] text-zinc-500 hover:text-orange-400 transition-colors rounded-lg hover:bg-white/[0.04]"
@@ -153,7 +164,7 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
             </button>
           )}
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="flex items-center justify-center w-7 h-7 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors"
           >
             <X className="w-4 h-4" />
@@ -235,7 +246,7 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
       {notifications.length > 0 && (
         <div className="px-5 py-3 border-t border-white/[0.06] bg-zinc-900">
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="w-full py-2 text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors"
           >
             Ver todas as notificacoes

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Search, Bell, Menu, ChevronDown, User, Settings, LogOut, Command } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
@@ -15,8 +15,27 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
   const { user, logout } = useAuthStore();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+
+  const fetchUnread = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications");
+      if (res.ok) {
+        const json = await res.json();
+        setUnreadCount(json.unread || 0);
+      }
+    } catch {
+      // silent
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, [fetchUnread]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -64,11 +83,15 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
             className="relative flex items-center justify-center w-9 h-9 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
           >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-zinc-900" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-zinc-900" />
+            )}
           </button>
-          {showNotifications && (
-            <NotificationsPanel onClose={() => setShowNotifications(false)} />
-          )}
+          <NotificationsPanel
+            open={showNotifications}
+            onClose={() => setShowNotifications(false)}
+            onUnreadChange={setUnreadCount}
+          />
         </div>
 
         {/* User Menu */}
@@ -81,7 +104,7 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
               {user?.name?.charAt(0)?.toUpperCase() || "U"}
             </div>
             <span className="hidden lg:block text-sm font-medium text-zinc-300 max-w-[120px] truncate">
-              {user?.name || "Usuário"}
+              {user?.name || "Usuario"}
             </span>
             <ChevronDown className="hidden lg:block w-4 h-4 text-zinc-500" />
           </button>
@@ -89,7 +112,7 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
           {showUserMenu && (
             <div className="absolute right-0 top-full mt-2 w-56 rounded-xl glass-card shadow-2xl shadow-black/40 py-2 animate-fadeIn">
               <div className="px-4 py-2 border-b border-white/[0.06]">
-                <p className="text-sm font-medium text-zinc-200">{user?.name || "Usuário"}</p>
+                <p className="text-sm font-medium text-zinc-200">{user?.name || "Usuario"}</p>
                 <p className="text-xs text-zinc-500">{user?.email || "usuario@email.com"}</p>
               </div>
               <div className="py-1">
@@ -99,7 +122,7 @@ export function Header({ onToggleSidebar, onOpenSearch }: HeaderProps) {
                 </button>
                 <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-zinc-400 hover:text-white hover:bg-white/[0.04] transition-colors">
                   <Settings className="w-4 h-4" />
-                  Configurações
+                  Configuracoes
                 </button>
               </div>
               <div className="border-t border-white/[0.06] pt-1">
