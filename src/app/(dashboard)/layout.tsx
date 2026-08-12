@@ -16,38 +16,19 @@ export default function DashboardLayout({
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { user, loading, setLoading } = useAuthStore();
+  const { user, loading, setLoading, checkAuth } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Simulate auth check
+  // Real auth check via API
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("hotflow-token") : null;
-    if (token) {
-      useAuthStore.getState().login(
-        {
-          id: "1",
-          name: "Arthur",
-          email: "arthur@hotflow.com",
-          role: "admin",
-          orgId: "org-1",
-        },
-        token
-      );
-    } else {
-      useAuthStore.getState().login(
-        {
-          id: "1",
-          name: "Arthur",
-          email: "arthur@hotflow.com",
-          role: "admin",
-          orgId: "org-1",
-        },
-        "dev-token"
-      );
-    }
-    setLoading(false);
-  }, [setLoading]);
+    checkAuth().then(() => {
+      const { user, loading } = useAuthStore.getState();
+      if (!loading && !user) {
+        router.push("/auth/login?redirect=" + encodeURIComponent(pathname));
+      }
+    });
+  }, [router, pathname, checkAuth, setLoading]);
 
   // Keyboard shortcut for search
   useEffect(() => {
@@ -79,6 +60,10 @@ export default function DashboardLayout({
     );
   }
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#09090b]">
       {/* Desktop Sidebar */}
@@ -86,7 +71,6 @@ export default function DashboardLayout({
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-
       {/* Main Content */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Header

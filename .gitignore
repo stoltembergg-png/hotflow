@@ -48,3 +48,6 @@ dev.db
 
 # skills lock (IDE config)
 skills-lock.json
+
+.vercel
+.env*
