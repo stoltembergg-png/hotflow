@@ -65,36 +65,36 @@ const navSections: NavSection[] = [
     title: "Marketing",
     items: [
       { label: "Campanhas", href: "/marketing/campanhas", icon: Megaphone },
+      { label: "Trafego", href: "/marketing/trafego", icon: TrendingUp },
     ],
   },
   {
-    title: "Conteúdo",
+    title: "Conteudo",
     items: [
-      { label: "Conteúdo", href: "/conteudo", icon: FileText },
-      { label: "Calendário", href: "/conteudo/calendario", icon: Calendar },
+      { label: "Conteudo", href: "/conteudo/conteudo", icon: FileText },
+      { label: "Calendario", href: "/conteudo/calendario", icon: Calendar },
       { label: "Criativos", href: "/conteudo/criativos", icon: Palette },
-      { label: "Tráfego", href: "/conteudo/trafego", icon: TrendingUp },
     ],
   },
   {
     title: "Financeiro",
     items: [
-      { label: "Financeiro", href: "/financeiro", icon: DollarSign },
-      { label: "Recuperação", href: "/financeiro/recuperacao", icon: RotateCcw },
+      { label: "Financeiro", href: "/financeiro/financeiro", icon: DollarSign },
+      { label: "Recuperacao", href: "/financeiro/recuperacao", icon: RotateCcw },
     ],
   },
   {
-    title: "Gestão",
+    title: "Gestao",
     items: [
       { label: "Tarefas", href: "/gestao/tarefas", icon: CheckSquare },
       { label: "Equipe", href: "/gestao/equipe", icon: UsersIcon },
-      { label: "Notificações", href: "/gestao/notificacoes", icon: Bell },
-      { label: "Relatórios", href: "/gestao/relatorios", icon: FileBarChart },
+      { label: "Notificacoes", href: "/gestao/notificacoes", icon: Bell },
+      { label: "Relatorios", href: "/gestao/relatorios", icon: FileBarChart },
     ],
   },
   {
     items: [
-      { label: "Configurações", href: "/configuracoes", icon: Settings },
+      { label: "Configuracoes", href: "/configuracoes", icon: Settings },
     ],
   },
 ];
@@ -107,7 +107,7 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(["CRM", "Conteúdo", "Financeiro", "Gestão"])
+    new Set(["CRM", "Conteudo", "Financeiro", "Gestao", "Marketing"])
   );
 
   const toggleSection = (title: string) => {
@@ -221,7 +221,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               <span className="text-xs font-semibold text-orange-300">Plano Pro</span>
             </div>
             <p className="text-[11px] text-zinc-400 leading-relaxed mb-3">
-              Desbloqueie automações avançadas e relatórios premium.
+              Desbloqueie automacoes avancadas e relatorios premium.
             </p>
             <button className="w-full py-2 text-xs font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg hover:from-orange-600 hover:to-amber-600 transition-all">
               Upgrade Agora
