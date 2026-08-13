@@ -61,7 +61,7 @@ export default function TarefasPage() {
               <div className="flex items-center gap-2 mb-3">
                 <Icon className="w-4 h-4 text-zinc-400" />
                 <h3 className="text-sm font-medium text-zinc-400">{stage.label}</h3>
-                <span className="text-xs text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded-full">{stageTasks.length}</span>
+                <span className="text-xs text-white/40 bg-white/5 px-2 py-0.5 rounded-full">{stageTasks.length}</span>
               </div>
               <div className="space-y-2">
                 {stageTasks.map(task => {
@@ -80,14 +80,14 @@ export default function TarefasPage() {
                       {stage.key !== "done" && (
                         <div className="flex gap-1 mt-2">
                           {taskStages.filter(s => s.key !== stage.key).map(s => (
-                            <button key={s.key} onClick={() => moveTask(task.id, s.key)} className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400">→{s.label.slice(0, 4)}</button>
+                            <button key={s.key} onClick={() => moveTask(task.id, s.key)} className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-zinc-700 text-zinc-400">→{s.label.slice(0, 4)}</button>
                           ))}
                         </div>
                       )}
                     </div>
                   );
                 })}
-                {stageTasks.length === 0 && <div className="text-xs text-zinc-600 text-center py-8 glass-card">Nenhuma tarefa</div>}
+                {stageTasks.length === 0 && <div className="text-xs text-white/40 text-center py-8 glass-card">Nenhuma tarefa</div>}
               </div>
             </div>
           );
@@ -99,9 +99,9 @@ export default function TarefasPage() {
             <h2 className="text-lg font-bold mb-4">Nova Tarefa</h2>
             <div className="space-y-3">
               <Input placeholder="Título" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-              <textarea className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm h-20" placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+              <textarea className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm h-20" placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
               <Input placeholder="Responsável" value={form.assignee} onChange={e => setForm({ ...form, assignee: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
                 {priorities.map(p => <option key={p.key} value={p.key}>{p.label}</option>)}
               </select>
               <Input type="date" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })} />

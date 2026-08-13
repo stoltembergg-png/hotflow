@@ -50,7 +50,7 @@ export default function AnalyticsPage() {
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="glass-card p-4 animate-pulse"><div className="h-4 bg-zinc-800 rounded w-20 mb-2" /><div className="h-6 bg-zinc-800 rounded w-24" /></div>
+            <div key={i} className="glass-card p-4 animate-pulse"><div className="h-4 bg-white/5 rounded w-20 mb-2" /><div className="h-6 bg-white/5 rounded w-24" /></div>
           ))}
         </div>
       ) : (

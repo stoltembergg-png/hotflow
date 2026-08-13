@@ -42,7 +42,7 @@ export default function TrafegoPage() {
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="border-b border-zinc-800">
+            <thead><tr className="border-b border-white/[0.08]">
               <th className="text-left p-3 text-zinc-400 font-medium">Campanha</th>
               <th className="text-left p-3 text-zinc-400 font-medium">Plataforma</th>
               <th className="text-right p-3 text-zinc-400 font-medium">Investimento</th>
@@ -55,7 +55,7 @@ export default function TrafegoPage() {
             </tr></thead>
             <tbody>
               {traffic.map(t => (
-                <tr key={t.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                <tr key={t.id} className="border-b border-white/[0.06] hover:bg-white/5">
                   <td className="p-3 font-medium">{t.campaign || "—"}</td>
                   <td className="p-3 text-zinc-400 capitalize">{t.platform || "—"}</td>
                   <td className="p-3 text-right">R$ {(t.investment || 0).toLocaleString("pt-BR")}</td>
@@ -78,7 +78,7 @@ export default function TrafegoPage() {
             <h2 className="text-lg font-bold mb-4">Novo Registro de Tráfego</h2>
             <div className="space-y-3">
               <Input placeholder="Campanha" value={form.campaign} onChange={e => setForm({ ...form, campaign: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })}>
                 <option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="tiktok">TikTok</option><option value="google">Google</option><option value="telegram">Telegram</option>
               </select>
               <Input placeholder="Investimento" type="number" value={form.investment} onChange={e => setForm({ ...form, investment: e.target.value })} />

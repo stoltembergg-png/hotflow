@@ -61,7 +61,7 @@ export default function ConteudoPage() {
               <h3 className="font-medium mb-1">{c.name}</h3>
               {c.platform && <p className="text-xs text-zinc-500 capitalize">{c.platform}</p>}
               {c.caption && <p className="text-xs text-zinc-400 mt-2 line-clamp-2">{c.caption}</p>}
-              {c.publishDate && <p className="text-xs text-zinc-600 mt-2">{new Date(c.publishDate).toLocaleDateString("pt-BR")}</p>}
+              {c.publishDate && <p className="text-xs text-white/40 mt-2">{new Date(c.publishDate).toLocaleDateString("pt-BR")}</p>}
             </div>
           );
         })}
@@ -73,14 +73,14 @@ export default function ConteudoPage() {
             <h2 className="text-lg font-bold mb-4">Novo Conteúdo</h2>
             <div className="space-y-3">
               <Input placeholder="Nome" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.contentType} onChange={e => setForm({ ...form, contentType: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.contentType} onChange={e => setForm({ ...form, contentType: e.target.value })}>
                 <option value="photo">Foto</option><option value="video">Vídeo</option><option value="reels">Reels</option><option value="story">Story</option><option value="post">Post</option><option value="banner">Banner</option><option value="text">Texto</option><option value="audio">Áudio</option>
               </select>
               <Input placeholder="Plataforma" value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
                 <option value="idea">Ideia</option><option value="production">Em Produção</option><option value="ready">Pronto</option><option value="scheduled">Agendado</option><option value="published">Publicado</option>
               </select>
-              <textarea className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm h-20" placeholder="Legenda" value={form.caption} onChange={e => setForm({ ...form, caption: e.target.value })} />
+              <textarea className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm h-20" placeholder="Legenda" value={form.caption} onChange={e => setForm({ ...form, caption: e.target.value })} />
               <div className="flex gap-2 justify-end">
                 <Button variant="outline" onClick={() => setShowModal(false)}>Cancelar</Button>
                 <Button onClick={createContent}>Criar</Button>

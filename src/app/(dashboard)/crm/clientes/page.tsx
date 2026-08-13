@@ -68,7 +68,7 @@ export default function ClientesPage() {
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="border-b border-zinc-800">
+            <thead><tr className="border-b border-white/[0.08]">
               <th className="text-left p-3 text-zinc-400 font-medium">Nome</th>
               <th className="text-left p-3 text-zinc-400 font-medium">Email</th>
               <th className="text-left p-3 text-zinc-400 font-medium">Status</th>
@@ -79,7 +79,7 @@ export default function ClientesPage() {
             </tr></thead>
             <tbody>
               {customers.map(c => (
-                <tr key={c.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/30 cursor-pointer" onClick={() => setShowDetail(c)}>
+                <tr key={c.id} className="border-b border-white/[0.06] hover:bg-white/5 cursor-pointer" onClick={() => setShowDetail(c)}>
                   <td className="p-3 font-medium">{c.name}</td>
                   <td className="p-3 text-zinc-400">{c.email}</td>
                   <td className="p-3"><Badge variant="outline" className={`${statusColors[c.status] || statusColors.active}`}>{c.status}</Badge></td>

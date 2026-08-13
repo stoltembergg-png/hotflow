@@ -124,7 +124,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-50 overflow-x-hidden">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-zinc-800/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
@@ -151,11 +151,11 @@ export default function LandingPage() {
           </div>
         </div>
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-800/50 p-4 space-y-3">
+          <div className="md:hidden border-t border-white/[0.06] p-4 space-y-3">
             <a href="#features" className="block text-sm text-zinc-400 hover:text-zinc-100">Funcionalidades</a>
             <a href="#pricing" className="block text-sm text-zinc-400 hover:text-zinc-100">Preços</a>
             <a href="#faq" className="block text-sm text-zinc-400 hover:text-zinc-100">FAQ</a>
-            <hr className="border-zinc-800" />
+            <hr className="border-white/[0.08]" />
             <Link href="/auth/login" className="block text-sm text-zinc-400 hover:text-zinc-100">Entrar</Link>
             <Link href="/auth/register" className="block px-5 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg text-center">
               Começar Grátis
@@ -191,12 +191,12 @@ export default function LandingPage() {
             </Link>
             <a
               href="#features"
-              className="px-8 py-3.5 border border-zinc-700 hover:border-zinc-600 text-zinc-300 font-medium rounded-xl transition-all text-base"
+              className="px-8 py-3.5 border border-white/[0.1] hover:border-zinc-600 text-zinc-300 font-medium rounded-xl transition-all text-base"
             >
               Ver Funcionalidades
             </a>
           </div>
-          <p className="text-xs text-zinc-600 mt-4">Sem cartão de crédito. Plano Free disponível.</p>
+          <p className="text-xs text-white/40 mt-4">Sem cartão de crédito. Plano Free disponível.</p>
         </div>
       </section>
 
@@ -216,7 +216,7 @@ export default function LandingPage() {
                   { label: "Vendas", value: "342", change: "+12.8%", up: true },
                   { label: "ROAS", value: "4.2x", change: "-2.1%", up: false },
                 ].map((m, i) => (
-                  <div key={i} className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800/50">
+                  <div key={i} className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
                     <p className="text-xs text-zinc-500 mb-1">{m.label}</p>
                     <p className="text-lg font-bold">{m.value}</p>
                     <p className={`text-xs mt-1 ${m.up ? 'text-green-400' : 'text-red-400'}`}>{m.change}</p>
@@ -224,7 +224,7 @@ export default function LandingPage() {
                 ))}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800/50 h-40">
+                <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06] h-40">
                   <p className="text-xs text-zinc-500 mb-2">Faturamento</p>
                   <div className="flex items-end gap-1 h-24">
                     {[40, 55, 45, 65, 50, 75, 60, 85, 70, 90, 80, 95].map((h, i) => (
@@ -234,17 +234,17 @@ export default function LandingPage() {
                     ))}
                   </div>
                 </div>
-                <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800/50 h-40">
+                <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06] h-40">
                   <p className="text-xs text-zinc-500 mb-2">Vendas por Origem</p>
                   <div className="flex items-center justify-center h-24">
                     <div className="w-20 h-20 rounded-full border-[6px] border-orange-500 border-r-green-500 border-b-blue-500 border-l-purple-500 relative">
-                      <div className="absolute inset-2 bg-zinc-900/50 rounded-full flex items-center justify-center">
+                      <div className="absolute inset-2 bg-white/[0.03] rounded-full flex items-center justify-center">
                         <span className="text-xs font-bold">342</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800/50 h-40">
+                <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06] h-40">
                   <p className="text-xs text-zinc-500 mb-2">Campanhas Ativas</p>
                   <div className="space-y-2 mt-2">
                     {[
@@ -315,7 +315,7 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p className="text-center text-xs text-zinc-600 mt-4">* Dados de demonstração</p>
+          <p className="text-center text-xs text-white/40 mt-4">* Dados de demonstração</p>
         </div>
       </section>
 
@@ -379,7 +379,7 @@ export default function LandingPage() {
                   className={`block w-full py-2.5 text-center text-sm font-medium rounded-lg transition-all ${
                     plan.popular
                       ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/20'
-                      : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                      : 'bg-white/5 hover:bg-zinc-700 text-zinc-300'
                   }`}
                 >
                   {plan.cta}
@@ -387,7 +387,7 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p className="text-center text-xs text-zinc-600 mt-4">* Planos de demonstração. Cobrança real requer integração de pagamento.</p>
+          <p className="text-center text-xs text-white/40 mt-4">* Planos de demonstração. Cobrança real requer integração de pagamento.</p>
         </div>
       </section>
 
@@ -440,7 +440,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800/50 py-12 px-4 sm:px-6 lg:px-8">
+      <footer className="border-t border-white/[0.06] py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
@@ -452,7 +452,7 @@ export default function LandingPage() {
               <a href="#pricing" className="text-xs text-zinc-500 hover:text-zinc-300 transition">Preços</a>
               <a href="#faq" className="text-xs text-zinc-500 hover:text-zinc-300 transition">FAQ</a>
             </div>
-            <p className="text-xs text-zinc-600">© 2026 HOTFLOW. Todos os direitos reservados.</p>
+            <p className="text-xs text-white/40">© 2026 HOTFLOW. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

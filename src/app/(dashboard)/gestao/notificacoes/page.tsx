@@ -52,7 +52,7 @@ export default function NotificacoesPage() {
                 {!n.read && <div className="w-2 h-2 rounded-full bg-orange-500" />}
               </div>
               <p className="text-xs text-zinc-400">{n.message}</p>
-              <p className="text-xs text-zinc-600 mt-1">{new Date(n.createdAt).toLocaleString("pt-BR")}</p>
+              <p className="text-xs text-white/40 mt-1">{new Date(n.createdAt).toLocaleString("pt-BR")}</p>
             </div>
             {!n.read && (
               <Button variant="ghost" size="sm" onClick={() => markAsRead(n.id)}><Check className="w-4 h-4" /></Button>

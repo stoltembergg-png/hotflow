@@ -78,7 +78,7 @@ export default function LeadsPage() {
               <div className="flex items-center gap-2 mb-3">
                 <div className={`w-2 h-2 rounded-full ${stage.color}`} />
                 <h3 className="text-sm font-medium text-zinc-400">{stage.label}</h3>
-                <span className="text-xs text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded-full">{getLeadsByStage(stage.key).length}</span>
+                <span className="text-xs text-white/40 bg-white/5 px-2 py-0.5 rounded-full">{getLeadsByStage(stage.key).length}</span>
               </div>
               <div className="space-y-2">
                 {getLeadsByStage(stage.key).map(lead => (
@@ -92,13 +92,13 @@ export default function LeadsPage() {
                     {stage.key !== "converted" && (
                       <div className="flex gap-1 mt-2">
                         {stages.filter(s => s.key !== stage.key).map(s => (
-                          <button key={s.key} onClick={() => moveStage(lead.id, s.key)} className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400" title={`Mover para ${s.label}`}>→{s.label.slice(0, 3)}</button>
+                          <button key={s.key} onClick={() => moveStage(lead.id, s.key)} className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-zinc-700 text-zinc-400" title={`Mover para ${s.label}`}>→{s.label.slice(0, 3)}</button>
                         ))}
                       </div>
                     )}
                   </div>
                 ))}
-                {getLeadsByStage(stage.key).length === 0 && <div className="text-xs text-zinc-600 text-center py-8">Nenhum lead</div>}
+                {getLeadsByStage(stage.key).length === 0 && <div className="text-xs text-white/40 text-center py-8">Nenhum lead</div>}
               </div>
             </div>
           ))}
@@ -143,7 +143,7 @@ export default function LeadsPage() {
       </div>
       <div className="glass-card overflow-hidden">
         <table className="w-full text-sm">
-          <thead><tr className="border-b border-zinc-800">
+          <thead><tr className="border-b border-white/[0.08]">
             <th className="text-left p-3 text-zinc-400 font-medium">Nome</th>
             <th className="text-left p-3 text-zinc-400 font-medium">Contato</th>
             <th className="text-left p-3 text-zinc-400 font-medium">Origem</th>
@@ -152,7 +152,7 @@ export default function LeadsPage() {
           </tr></thead>
           <tbody>
             {leads.map(lead => (
-              <tr key={lead.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
+              <tr key={lead.id} className="border-b border-white/[0.06] hover:bg-white/5">
                 <td className="p-3 font-medium">{lead.name}</td>
                 <td className="p-3 text-zinc-400">{lead.contact || "—"}</td>
                 <td className="p-3 text-zinc-400">{lead.source || "—"}</td>

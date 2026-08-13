@@ -62,7 +62,7 @@ export default function CampanhasPage() {
             <h2 className="text-lg font-bold mb-4">Nova Campanha</h2>
             <div className="space-y-3">
               <Input placeholder="Nome" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })}>
                 {platforms.map(p => <option key={p} value={p} className="capitalize">{p}</option>)}
               </select>
               <Input placeholder="Objetivo" value={form.objective} onChange={e => setForm({ ...form, objective: e.target.value })} />

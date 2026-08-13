@@ -33,7 +33,7 @@ export default function AssinaturasPage() {
       </div>
       <div className="glass-card overflow-hidden">
         <table className="w-full text-sm">
-          <thead><tr className="border-b border-zinc-800">
+          <thead><tr className="border-b border-white/[0.08]">
             <th className="text-left p-3 text-zinc-400 font-medium">Cliente</th>
             <th className="text-left p-3 text-zinc-400 font-medium">Plano</th>
             <th className="text-right p-3 text-zinc-400 font-medium">Valor</th>
@@ -43,7 +43,7 @@ export default function AssinaturasPage() {
           </tr></thead>
           <tbody>
             {subs.map(s => (
-              <tr key={s.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
+              <tr key={s.id} className="border-b border-white/[0.06] hover:bg-white/5">
                 <td className="p-3 font-medium">{s.customer?.name || "—"}</td>
                 <td className="p-3 text-zinc-400">{s.plan}</td>
                 <td className="p-3 text-right text-green-400 font-medium">R$ {(s.amount || 0).toLocaleString("pt-BR")}</td>

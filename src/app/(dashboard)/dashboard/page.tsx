@@ -561,7 +561,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   {i < data.funnel.length - 1 && (
-                    <span className="text-[10px] text-zinc-600 shrink-0 w-12 text-right">
+                    <span className="text-[10px] text-white/40 shrink-0 w-12 text-right">
                       {data.funnel[i + 1]?.count
                         ? `${((data.funnel[i + 1].count / stage.count) * 100).toFixed(1)}%`
                         : "--"}
