@@ -5,13 +5,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { Mail, Lock, CheckCircle2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/toast";
 
 const forgotSchema = z.object({
-  email: z.email("Email inválido"),
+  email: z.email("Email invalido"),
+  newPassword: z.string().min(6, "A senha deve ter no minimo 6 caracteres"),
 });
 
 type ForgotFormData = z.infer<typeof forgotSchema>;
@@ -19,7 +21,7 @@ type ForgotFormData = z.infer<typeof forgotSchema>;
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
-  const [sent, setSent] = React.useState(false);
+  const [done, setDone] = React.useState(false);
 
   const {
     register,
@@ -38,43 +40,50 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify(data),
       });
 
-      // Always show success to prevent email enumeration
-      setSent(true);
+      const result = await res.json();
+
+      if (!res.ok) {
+        toast({
+          title: "Erro",
+          description: result.error || "Erro ao alterar senha",
+          variant: "error",
+        });
+        return;
+      }
+
+      setDone(true);
       toast({
-        title: "Email enviado!",
-        description: "Verifique sua caixa de entrada",
+        title: "Senha alterada!",
+        description: "Voce ja pode fazer login com a nova senha",
         variant: "success",
       });
     } catch {
-      setSent(true);
       toast({
-        title: "Email enviado!",
-        description: "Verifique sua caixa de entrada",
-        variant: "success",
+        title: "Erro",
+        description: "Erro de conexao",
+        variant: "error",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  if (sent) {
+  if (done) {
     return (
       <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/20 border border-emerald-500/30">
-            <svg className="h-8 w-8 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-              <polyline points="22,6 12,13 2,6" />
-            </svg>
+            <CheckCircle2 className="h-8 w-8 text-emerald-400" />
           </div>
-          <CardTitle className="text-xl font-bold text-white">Email enviado</CardTitle>
+          <CardTitle className="text-xl font-bold text-white">Senha alterada</CardTitle>
           <CardDescription className="text-white/60">
-            Se existir uma conta com o email informado, você receberá um link para redefinir sua senha.
+            Sua senha foi alterada com sucesso. Faca login com a nova senha.
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
           <Link href="/auth/login">
             <Button variant="outline" className="w-full">
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao login
             </Button>
           </Link>
@@ -87,14 +96,11 @@ export default function ForgotPasswordPage() {
     <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
       <CardHeader className="text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500 shadow-lg shadow-orange-500/25">
-          <svg className="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0110 0v4" />
-          </svg>
+          <Lock className="h-8 w-8 text-white" />
         </div>
         <CardTitle className="text-2xl font-bold text-white">Esqueceu a senha?</CardTitle>
         <CardDescription className="text-white/60">
-          Informe seu email e enviaremos um link para redefinir sua senha
+          Informe seu email e uma nova senha para redefinir
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -106,9 +112,17 @@ export default function ForgotPasswordPage() {
             error={errors.email?.message}
             {...register("email")}
           />
+          <Input
+            label="Nova senha"
+            type="password"
+            placeholder="Minimo 6 caracteres"
+            error={errors.newPassword?.message}
+            {...register("newPassword")}
+          />
 
           <Button type="submit" loading={loading} className="w-full" size="lg">
-            Enviar link de recuperação
+            <Mail className="w-4 h-4 mr-2" />
+            Alterar senha
           </Button>
         </form>
 
