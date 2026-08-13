@@ -134,30 +134,33 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
       style={{ "--ease": EASE } as React.CSSProperties}
     >
-      {/* Logo + Toggle — always vertical, logo always centered */}
+      {/* Logo area — logo IS the toggle button */}
       <div className="flex flex-col items-center shrink-0 border-b border-white/[0.06] py-3 gap-2">
-        <Link
-          href="/dashboard"
-          className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-400 shrink-0 hover:scale-105 transition-transform duration-200"
-        >
-          <Flame className="w-5 h-5 text-white" />
-        </Link>
-        <button
-          onClick={onToggle}
-          className={cn(
-            "flex items-center justify-center w-7 h-7 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] shrink-0",
-            "transition-all duration-200 hover:scale-110 active:scale-90"
-          )}
-          title={collapsed ? "Expandir menu" : "Recolher menu"}
-        >
-          <div className="transition-transform duration-300" style={{ transitionTimingFunction: EASE }}>
-            {collapsed ? (
-              <ChevronRight className="w-3.5 h-3.5" />
-            ) : (
-              <ChevronLeft className="w-3.5 h-3.5" />
+        <div className="relative group w-10 h-10">
+          <Link
+            href="/dashboard"
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-400 shrink-0 hover:scale-105 transition-transform duration-200"
+          >
+            <Flame className="w-5 h-5 text-white" />
+          </Link>
+          {/* Toggle button revealed on hover over logo area */}
+          <button
+            onClick={onToggle}
+            className={cn(
+              "absolute inset-0 flex items-center justify-center w-7 h-7 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] shrink-0 opacity-0 group-hover:opacity-100",
+              "transition-all duration-200 hover:scale-110 active:scale-90"
             )}
-          </div>
-        </button>
+            title={collapsed ? "Expandir menu" : "Recolher menu"}
+          >
+            <div className="transition-transform duration-300" style={{ transitionTimingFunction: EASE }}>
+              {collapsed ? (
+                <ChevronRight className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronLeft className="w-3.5 h-3.5" />
+              )}
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Navigation */}
