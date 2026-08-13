@@ -125,10 +125,10 @@ body {
   border-radius: 1rem;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling — minimal, invisible until hover */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -136,12 +136,30 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
+  background: transparent;
+  border-radius: 2px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: var(--border);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+/* Firefox on hover - can't easily do hover, so keep thin */
+@supports (scrollbar-color: transparent transparent) {
+  *:hover {
+    scrollbar-color: var(--border) transparent;
+  }
 }
 
 /* ========================================
