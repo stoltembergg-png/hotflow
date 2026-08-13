@@ -85,7 +85,7 @@ export default function VendasPage() {
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="border-b border-zinc-800">
+            <thead><tr className="border-b border-white/[0.08]">
               <th className="text-left p-3 text-zinc-400 font-medium">ID</th>
               <th className="text-left p-3 text-zinc-400 font-medium">Cliente</th>
               <th className="text-left p-3 text-zinc-400 font-medium">Produto</th>
@@ -97,7 +97,7 @@ export default function VendasPage() {
             </tr></thead>
             <tbody>
               {orders.map(o => (
-                <tr key={o.id} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                <tr key={o.id} className="border-b border-white/[0.06] hover:bg-white/5">
                   <td className="p-3 text-zinc-400 font-mono text-xs">#{o.id.slice(0, 8)}</td>
                   <td className="p-3 font-medium">{o.customer?.name || "—"}</td>
                   <td className="p-3 text-zinc-400">{o.product?.name || "—"}</td>
@@ -131,7 +131,7 @@ export default function VendasPage() {
               <Input placeholder="Valor bruto" type="number" value={form.totalAmount} onChange={e => setForm({ ...form, totalAmount: e.target.value })} />
               <Input placeholder="Desconto" type="number" value={form.discount} onChange={e => setForm({ ...form, discount: e.target.value })} />
               <Input placeholder="Taxas" type="number" value={form.fees} onChange={e => setForm({ ...form, fees: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.paymentMethod} onChange={e => setForm({ ...form, paymentMethod: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.paymentMethod} onChange={e => setForm({ ...form, paymentMethod: e.target.value })}>
                 <option value="pix">PIX</option><option value="credit_card">Cartão</option><option value="boleto">Boleto</option><option value="crypto">Crypto</option>
               </select>
               <div className="flex gap-2 justify-end">

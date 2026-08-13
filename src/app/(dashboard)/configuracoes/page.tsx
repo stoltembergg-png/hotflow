@@ -210,9 +210,9 @@ export default function ConfiguracoesPage() {
         <div className="flex-1 glass-card p-6">
           {loading ? (
             <div className="space-y-4">
-              <div className="h-6 w-32 bg-zinc-800 rounded animate-pulse" />
-              <div className="h-10 w-full bg-zinc-800 rounded animate-pulse" />
-              <div className="h-10 w-full bg-zinc-800 rounded animate-pulse" />
+              <div className="h-6 w-32 bg-white/5 rounded animate-pulse" />
+              <div className="h-10 w-full bg-white/5 rounded animate-pulse" />
+              <div className="h-10 w-full bg-white/5 rounded animate-pulse" />
             </div>
           ) : (
             <>
@@ -288,7 +288,7 @@ export default function ConfiguracoesPage() {
                     tarefas: "Tarefas",
                     sistema: "Sistema",
                   }).map(([key, label]) => (
-                    <div key={key} className="flex items-center justify-between p-3 bg-zinc-900/50 rounded-lg">
+                    <div key={key} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg">
                       <span className="text-sm">{label}</span>
                       <button
                         onClick={() =>
@@ -328,7 +328,7 @@ export default function ConfiguracoesPage() {
                           "relative w-full aspect-[4/3] rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-200 border-2",
                           theme === t.key
                             ? "border-orange-500 shadow-lg shadow-orange-500/20"
-                            : "border-zinc-700 hover:border-zinc-600"
+                            : "border-white/[0.1] hover:border-zinc-600"
                         )}
                         style={{ backgroundColor: t.bg }}
                       >
@@ -359,7 +359,7 @@ export default function ConfiguracoesPage() {
                   <h2 className="font-bold text-lg">Integracoes</h2>
                   <p className="text-sm text-zinc-500">Conecte suas plataformas de marketing.</p>
                   {["Instagram", "Facebook", "TikTok", "Google Ads", "Telegram"].map((i) => (
-                    <div key={i} className="flex items-center justify-between p-3 bg-zinc-900/50 rounded-lg">
+                    <div key={i} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg">
                       <span className="text-sm font-medium">{i}</span>
                       <Badge variant="outline" className="bg-zinc-500/10 text-zinc-400">
                         Nao conectado

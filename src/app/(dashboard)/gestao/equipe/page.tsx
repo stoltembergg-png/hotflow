@@ -42,7 +42,7 @@ export default function EquipePage() {
               </div>
             </div>
             <Badge variant="outline" className={`${roleColors[m.role] || roleColors.viewer}`}>{roleLabels[m.role] || m.role}</Badge>
-            <p className="text-xs text-zinc-600 mt-2">Desde {new Date(m.createdAt).toLocaleDateString("pt-BR")}</p>
+            <p className="text-xs text-white/40 mt-2">Desde {new Date(m.createdAt).toLocaleDateString("pt-BR")}</p>
           </div>
         ))}
         {members.length === 0 && <div className="col-span-full text-center py-12 text-zinc-500 glass-card">Nenhum membro na equipe</div>}
@@ -54,7 +54,7 @@ export default function EquipePage() {
             <div className="space-y-3">
               <Input placeholder="Nome" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
               <Input placeholder="Email" type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
                 {Object.entries(roleLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
               <div className="flex gap-2 justify-end">

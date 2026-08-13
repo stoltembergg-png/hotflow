@@ -56,7 +56,7 @@ export default function RecuperacaoPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="glass-card p-4 animate-pulse">
-              <div className="w-5 h-5 mb-2 bg-zinc-800 rounded" />
+              <div className="w-5 h-5 mb-2 bg-white/5 rounded" />
               <p className="text-xs text-zinc-500">Carregando...</p>
               <p className="text-lg font-bold">—</p>
             </div>
@@ -65,10 +65,10 @@ export default function RecuperacaoPage() {
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="glass-card p-4 animate-pulse flex items-center gap-4">
-              <div className="w-5 h-5 bg-zinc-800 rounded shrink-0" />
+              <div className="w-5 h-5 bg-white/5 rounded shrink-0" />
               <div className="flex-1 space-y-1">
-                <div className="h-4 w-1/4 bg-zinc-800 rounded" />
-                <div className="h-3 w-1/2 bg-zinc-800 rounded" />
+                <div className="h-4 w-1/4 bg-white/5 rounded" />
+                <div className="h-3 w-1/2 bg-white/5 rounded" />
               </div>
             </div>
           ))}
@@ -118,7 +118,7 @@ export default function RecuperacaoPage() {
                     <Badge variant="outline" className={`${priorityColors[r.priority]}`}>{priorityLabels[r.priority]}</Badge>
                   </div>
                   <p className="text-sm text-zinc-400">{r.product} • R$ {r.value.toLocaleString("pt-BR")}</p>
-                  <p className="text-xs text-zinc-600 mt-1">Última atividade: {new Date(r.lastActivity).toLocaleDateString("pt-BR")}</p>
+                  <p className="text-xs text-white/40 mt-1">Última atividade: {new Date(r.lastActivity).toLocaleDateString("pt-BR")}</p>
                 </div>
                 <Button variant="outline" size="sm"><ArrowRight className="w-4 h-4" /></Button>
               </div>

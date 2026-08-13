@@ -59,7 +59,7 @@ export default function OfertasPage() {
               <Input placeholder="Nome" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
               <Input placeholder="Preço original" type="number" value={form.originalPrice} onChange={e => setForm({ ...form, originalPrice: e.target.value })} />
               <Input placeholder="Preço promocional" type="number" value={form.promotionalPrice} onChange={e => setForm({ ...form, promotionalPrice: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
                 <option value="standard">Padrão</option><option value="upsell">Upsell</option><option value="downsell">Downsell</option><option value="bump">Order Bump</option><option value="bundle">Bundle</option>
               </select>
               <Input placeholder="CTA" value={form.cta} onChange={e => setForm({ ...form, cta: e.target.value })} />

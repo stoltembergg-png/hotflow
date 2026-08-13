@@ -41,21 +41,21 @@ export default function CriativosPage() {
           <h1 className="text-2xl font-bold">Criativos</h1>
         </div>
         <div className="glass-card p-4 animate-pulse">
-          <div className="h-5 w-48 bg-zinc-800 rounded mb-4" />
+          <div className="h-5 w-48 bg-white/5 rounded mb-4" />
           <div className="space-y-2">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center gap-4 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800/50">
-                <div className="w-8 h-6 bg-zinc-800 rounded" />
-                <div className="w-10 h-10 rounded-lg bg-zinc-800" />
+              <div key={i} className="flex items-center gap-4 p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                <div className="w-8 h-6 bg-white/5 rounded" />
+                <div className="w-10 h-10 rounded-lg bg-white/5" />
                 <div className="flex-1">
-                  <div className="h-4 w-1/3 bg-zinc-800 rounded mb-1" />
-                  <div className="h-3 w-1/6 bg-zinc-800 rounded" />
+                  <div className="h-4 w-1/3 bg-white/5 rounded mb-1" />
+                  <div className="h-3 w-1/6 bg-white/5 rounded" />
                 </div>
                 <div className="grid grid-cols-4 gap-6">
                   {[...Array(4)].map((_, j) => (
                     <div key={j} className="text-right">
-                      <div className="h-3 w-8 bg-zinc-800 rounded mb-1 ml-auto" />
-                      <div className="h-4 w-12 bg-zinc-800 rounded ml-auto" />
+                      <div className="h-3 w-8 bg-white/5 rounded mb-1 ml-auto" />
+                      <div className="h-4 w-12 bg-white/5 rounded ml-auto" />
                     </div>
                   ))}
                 </div>
@@ -77,7 +77,7 @@ export default function CriativosPage() {
               key={s}
               onClick={() => setSortBy(s)}
               className={`px-3 py-1.5 text-xs rounded-lg border transition ${
-                sortBy === s ? "bg-orange-500/10 border-orange-500/30 text-orange-400" : "border-zinc-700 text-zinc-400 hover:border-zinc-600"
+                sortBy === s ? "bg-orange-500/10 border-orange-500/30 text-orange-400" : "border-white/[0.1] text-zinc-400 hover:border-zinc-600"
               }`}
             >
               {s === "ctr" ? "Maior CTR" : s === "conversions" ? "Maior Conversão" : s === "revenue" ? "Maior Receita" : "Maior ROAS"}
@@ -95,9 +95,9 @@ export default function CriativosPage() {
             <div className="p-8 text-center text-zinc-500">Nenhum criativo encontrado. Crie conteúdos na aba Conteúdo.</div>
           ) : (
             sorted.map((c, i) => (
-              <div key={c.id} className="flex items-center gap-4 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800/50">
+              <div key={c.id} className="flex items-center gap-4 p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
                 <span className="text-lg font-bold text-zinc-500 w-8">#{i + 1}</span>
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
                   {c.type === "video" ? <Video className="w-5 h-5 text-zinc-400" /> : <Image className="w-5 h-5 text-zinc-400" />}
                 </div>
                 <div className="flex-1">

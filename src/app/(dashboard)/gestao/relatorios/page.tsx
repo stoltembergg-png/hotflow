@@ -66,14 +66,14 @@ export default function RelatoriosPage() {
             ) : data.data?.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead><tr className="border-b border-zinc-800">
+                  <thead><tr className="border-b border-white/[0.08]">
                     {Object.keys(data.data[0]).filter(k => typeof data.data[0][k] !== 'object').map(key => (
                       <th key={key} className="text-left p-2 text-zinc-400 font-medium capitalize">{key}</th>
                     ))}
                   </tr></thead>
                   <tbody>
                     {data.data.slice(0, 50).map((item: any, i: number) => (
-                      <tr key={i} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                      <tr key={i} className="border-b border-white/[0.06] hover:bg-white/5">
                         {Object.keys(item).filter(k => typeof item[k] !== 'object').map(key => (
                           <td key={key} className="p-2 text-zinc-300">{String(item[key] || '—')}</td>
                         ))}

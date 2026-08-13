@@ -63,7 +63,7 @@ export default function FinanceiroPage() {
                     <span className="text-sm">{categoryLabels[cat] || cat}</span>
                     <span className={`text-sm font-medium ${categoryColors[cat] || "text-zinc-400"}`}>R$ {amount.toLocaleString("pt-BR")}</span>
                   </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-1.5">
+                  <div className="w-full bg-white/5 rounded-full h-1.5">
                     <div className="bg-orange-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
@@ -76,7 +76,7 @@ export default function FinanceiroPage() {
           <h3 className="font-bold mb-4">Últimas Despesas</h3>
           <div className="space-y-2">
             {expenses.slice(0, 10).map(e => (
-              <div key={e.id} className="flex items-center justify-between p-2 rounded-lg bg-zinc-900/50">
+              <div key={e.id} className="flex items-center justify-between p-2 rounded-lg bg-white/[0.03]">
                 <div>
                   <p className="text-sm font-medium">{e.description}</p>
                   <p className="text-xs text-zinc-500">{categoryLabels[e.category] || e.category} • {new Date(e.date || '').toLocaleDateString("pt-BR")}</p>
@@ -95,7 +95,7 @@ export default function FinanceiroPage() {
             <div className="space-y-3">
               <Input placeholder="Descrição" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
               <Input placeholder="Valor" type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} />
-              <select className="w-full bg-zinc-900 border border-zinc-700 rounded-md p-2 text-sm" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+              <select className="w-full bg-white/[0.02] border border-white/[0.1] rounded-md p-2 text-sm" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
                 {Object.entries(categoryLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
               <div className="flex gap-2 justify-end">

@@ -45,9 +45,9 @@ export default function CalendarioPage() {
         </div>
       </div>
       <div className="flex items-center justify-between">
-        <button onClick={prev} className="p-2 hover:bg-zinc-800 rounded-lg"><ChevronLeft className="w-5 h-5" /></button>
+        <button onClick={prev} className="p-2 hover:bg-white/5 rounded-lg"><ChevronLeft className="w-5 h-5" /></button>
         <h2 className="text-lg font-bold">{monthNames[month]} {year}</h2>
-        <button onClick={next} className="p-2 hover:bg-zinc-800 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
+        <button onClick={next} className="p-2 hover:bg-white/5 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
       </div>
       <div className="glass-card p-4">
         <div className="grid grid-cols-7 gap-1 mb-2">
@@ -62,11 +62,11 @@ export default function CalendarioPage() {
             const items = getContentForDay(day);
             const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
             return (
-              <div key={day} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday ? "border-orange-500/50 bg-orange-500/5" : "border-zinc-800/50 hover:bg-zinc-800/30"}`}>
+              <div key={day} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday ? "border-orange-500/50 bg-orange-500/5" : "border-white/[0.06] hover:bg-white/5"}`}>
                 <span className={`text-xs font-medium ${isToday ? "text-orange-400" : "text-zinc-400"}`}>{day}</span>
                 <div className="mt-1 space-y-0.5">
                   {items.slice(0, 3).map(item => (
-                    <div key={item.id} className={`text-[10px] px-1 py-0.5 rounded truncate ${statusColors[item.status] || "bg-zinc-800"}`}>{item.name}</div>
+                    <div key={item.id} className={`text-[10px] px-1 py-0.5 rounded truncate ${statusColors[item.status] || "bg-white/5"}`}>{item.name}</div>
                   ))}
                   {items.length > 3 && <div className="text-[10px] text-zinc-500">+{items.length - 3}</div>}
                 </div>
